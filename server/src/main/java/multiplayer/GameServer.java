@@ -1,9 +1,10 @@
 package multiplayer;
 
-import org.glassfish.tyrus.server.Server;
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
+import org.java_websocket.WebSocket;
+import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.WebSocketServer;
+
+import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
@@ -12,11 +13,11 @@ import com.google.gson.JsonParser;
 
 public class GameServer {
     // WebSocket server
-    private Server server;
+    private GameSocketServer socketServer;
     private final int PORT = 8887;
 
     // Game state
-    private final Map<String, Session> sessions = new ConcurrentHashMap<>();
+    private final Map<String, WebSocket> connections = new ConcurrentHashMap<>();
     private final Map<String, Player> players = new ConcurrentHashMap<>();
     private final List<Bullet> bullets = new ArrayList<>();
 
@@ -30,22 +31,16 @@ public class GameServer {
     public GameServer() {
         // Initialize components
         this.gameWorld = new GameWorld(players, bullets);
-        this.networkManager = new NetworkManager(sessions, gson);
+        this.networkManager = new NetworkManager(connections, gson);
 
         // Start WebSocket server in a separate thread
         startWebSocketServer();
     }
 
     private void startWebSocketServer() {
-        new Thread(() -> {
-            try {
-                server = new Server("localhost", PORT, "/websocket", null, GameEndpoint.class);
-                server.start();
-                System.out.println("WebSocket server started on port " + PORT);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        socketServer = new GameSocketServer(PORT);
+        socketServer.start();
+        System.out.println("WebSocket server starting on port " + PORT);
     }
 
     public void update(float deltaTime) {
@@ -57,20 +52,20 @@ public class GameServer {
     }
 
     // Client connection handling
-    public void handleConnect(String playerId, Session session) {
-        sessions.put(playerId, session);
+    public void handleConnect(String playerId, WebSocket connection) {
+        connections.put(playerId, connection);
 
         // Create new player
         Player newPlayer = gameWorld.createPlayer(playerId);
 
         // Send welcome message
-        networkManager.sendWelcomeMessage(session, playerId, newPlayer);
+        networkManager.sendWelcomeMessage(connection, playerId, newPlayer);
 
         System.out.println("Player connected: " + playerId);
     }
 
     public void handleDisconnect(String playerId) {
-        sessions.remove(playerId);
+        connections.remove(playerId);
         players.remove(playerId);
 
         // Notify other players
@@ -104,44 +99,55 @@ public class GameServer {
         }
     }
 
-    // WebSocket endpoint
-    @ServerEndpoint("/game")
-    public static class GameEndpoint {
-        private static GameServer gameServer;
+    /**
+     * Inner class that implements the WebSocket server functionality
+     */
+    private class GameSocketServer extends WebSocketServer {
 
-        @OnOpen
-        public void onOpen(Session session) {
-            if (gameServer == null) {
-                try {
-                    gameServer = SpringContextUtil.getBean(GameServer.class);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        public GameSocketServer(int port) {
+            super(new InetSocketAddress(port));
+        }
+
+        @Override
+        public void onOpen(WebSocket conn, ClientHandshake handshake) {
+            String playerId = UUID.randomUUID().toString();
+            conn.setAttachment(playerId); // Store playerId with the connection
+            handleConnect(playerId, conn);
+        }
+
+        @Override
+        public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+            String playerId = conn.getAttachment();
+            if (playerId != null) {
+                handleDisconnect(playerId);
+            }
+        }
+
+        @Override
+        public void onMessage(WebSocket conn, String message) {
+            String playerId = conn.getAttachment();
+            if (playerId != null) {
+                handleMessage(playerId, message);
+            }
+        }
+
+        @Override
+        public void onError(WebSocket conn, Exception ex) {
+            System.err.println("WebSocket error:");
+            ex.printStackTrace();
+
+            if (conn != null) {
+                String playerId = conn.getAttachment();
+                if (playerId != null) {
+                    handleDisconnect(playerId);
                 }
             }
-
-            if (gameServer != null) {
-                gameServer.handleConnect(session.getId(), session);
-            }
         }
 
-        @OnClose
-        public void onClose(Session session) {
-            if (gameServer != null) {
-                gameServer.handleDisconnect(session.getId());
-            }
-        }
-
-        @OnMessage
-        public void onMessage(String message, Session session) {
-            if (gameServer != null) {
-                gameServer.handleMessage(session.getId(), message);
-            }
-        }
-
-        @OnError
-        public void onError(Session session, Throwable throwable) {
-            System.err.println("Error for session " + session.getId());
-            throwable.printStackTrace();
+        @Override
+        public void onStart() {
+            System.out.println("WebSocket server started successfully on port " + PORT);
+            setConnectionLostTimeout(30);
         }
     }
 }

@@ -1,7 +1,6 @@
 package multiplayer;
 
-import javax.websocket.Session;
-import java.io.IOException;
+import org.java_websocket.WebSocket;
 import java.util.List;
 import java.util.Map;
 import com.google.gson.Gson;
@@ -11,11 +10,11 @@ import com.google.gson.JsonObject;
  * Handles all network communication with clients
  */
 public class NetworkManager {
-    private final Map<String, Session> sessions;
+    private final Map<String, WebSocket> connections;
     private final Gson gson;
 
-    public NetworkManager(Map<String, Session> sessions, Gson gson) {
-        this.sessions = sessions;
+    public NetworkManager(Map<String, WebSocket> connections, Gson gson) {
+        this.connections = connections;
         this.gson = gson;
     }
 
@@ -29,18 +28,14 @@ public class NetworkManager {
     }
 
     public void sendPlayerHit(String playerId, int damage, int currentHealth) {
-        Session session = sessions.get(playerId);
-        if (session != null) {
+        WebSocket conn = connections.get(playerId);
+        if (conn != null && conn.isOpen()) {
             JsonObject hitMsg = new JsonObject();
             hitMsg.addProperty("type", "hit");
             hitMsg.addProperty("damage", damage);
             hitMsg.addProperty("health", currentHealth);
 
-            try {
-                session.getBasicRemote().sendText(hitMsg.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            conn.send(hitMsg.toString());
         }
     }
 
@@ -52,18 +47,14 @@ public class NetworkManager {
         broadcast(deathMsg.toString());
     }
 
-    public void sendWelcomeMessage(Session session, String playerId, Player player) {
+    public void sendWelcomeMessage(WebSocket conn, String playerId, Player player) {
         JsonObject welcomeMsg = new JsonObject();
         welcomeMsg.addProperty("type", "welcome");
         welcomeMsg.addProperty("id", playerId);
         welcomeMsg.addProperty("x", player.getX());
         welcomeMsg.addProperty("y", player.getY());
 
-        try {
-            session.getBasicRemote().sendText(welcomeMsg.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        conn.send(welcomeMsg.toString());
     }
 
     public void broadcastPlayerLeft(String playerId) {
@@ -75,11 +66,9 @@ public class NetworkManager {
     }
 
     public void broadcast(String message) {
-        for (Session session : sessions.values()) {
-            try {
-                session.getBasicRemote().sendText(message);
-            } catch (IOException e) {
-                e.printStackTrace();
+        for (WebSocket conn : connections.values()) {
+            if (conn.isOpen()) {
+                conn.send(message);
             }
         }
     }

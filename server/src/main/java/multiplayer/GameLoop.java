@@ -24,7 +24,7 @@ public class GameLoop implements Runnable {
             deltaTime = (currentTime - lastFrameTime) / 1000f;
             lastFrameTime = currentTime;
 
-            System.out.println(deltaTime);
+            // System.out.println(deltaTime);
 
             // Update game using deltaTime from the previous frame
             gameServer.update(deltaTime);

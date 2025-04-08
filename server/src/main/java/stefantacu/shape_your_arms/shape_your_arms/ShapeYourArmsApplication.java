@@ -7,11 +7,6 @@ import org.springframework.context.annotation.Bean;
 
 import multiplayer.GameLoop;
 import multiplayer.GameServer;
-import multiplayer.GameEndpointConfigurator;
-
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
 
 @SpringBootApplication
 public class ShapeYourArmsApplication {
@@ -30,20 +25,6 @@ public class ShapeYourArmsApplication {
 	@Bean
 	public GameServer gameServer() {
 		GameServer gameServer = new GameServer();
-		GameEndpointConfigurator.setGameServer(gameServer);
 		return gameServer;
-	}
-
-	@ServerEndpoint(value = "/game", configurator = GameEndpointConfigurator.class)
-	public static class GameEndpoint {
-		@OnOpen
-		public void onOpen(Session session) {
-			GameServer gameServer = GameEndpointConfigurator.getGameServer();
-			if (gameServer != null) {
-				gameServer.handleConnect(session.getId(), session);
-			}
-		}
-
-		// other methods similarly updated
 	}
 }

@@ -1,8 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://01eemjofmn6g"]
+[gd_scene load_steps=3 format=3 uid="uid://01eemjofmn6g"]
 
-[ext_resource type="PackedScene" uid="uid://m4vwtjqvbguk" path="res://player.tscn" id="1_3mqji"]
+[ext_resource type="PackedScene" uid="uid://m4vwtjqvbguk" path="res://PlayerScene.tscn" id="2_rpqi1"]
+[ext_resource type="PackedScene" uid="uid://cplxw8svw8xld" path="res://networking/network_manager.tscn" id="2_x4av3"]
 
 [node name="MainScene" type="Node2D"]
 
-[node name="Player" parent="." instance=ExtResource("1_3mqji")]
-position = Vector2(351, 239)
+[node name="PlayerScene" parent="." instance=ExtResource("2_rpqi1")]
+position = Vector2(458, 230)
+
+[node name="NetworkManager" parent="." instance=ExtResource("2_x4av3")]
