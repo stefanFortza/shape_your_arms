@@ -20,8 +20,13 @@ impl ISprite2D for Player {
         }
     }
 
+    fn process(&mut self, delta: f64) {
+        godot_print!("DELTA: {}", delta);
+    }
+
     fn physics_process(&mut self, delta: f64) {
         let direction = self.get_input_direction();
+        // godot_print!("{}", delta);
         self.update_position(direction, delta);
         self.rotate_player(delta);
     }
