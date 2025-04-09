@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cplxw8svw8xld"]
+
+[ext_resource type="Script" uid="uid://d1aljo4dsycpf" path="res://networking/network_client.gd" id="1_db7wg"]
+
+[node name="NetworkClient" type="Node"]
+script = ExtResource("1_db7wg")
+
+[node name="NetwornkManager" type="NetwornkManager" parent="."]
+
+[connection signal="on_message_received" from="." to="NetwornkManager" method="_on_network_client_on_message_received"]

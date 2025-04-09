@@ -6,7 +6,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import multiplayer.GameLoop;
-import multiplayer.GameServer;
+import multiplayer.networking.GameServer;
 
 @SpringBootApplication
 public class ShapeYourArmsApplication {

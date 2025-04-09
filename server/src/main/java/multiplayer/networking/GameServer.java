@@ -1,4 +1,4 @@
-package multiplayer;
+package multiplayer.networking;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -10,6 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import multiplayer.entities.Bullet;
+import multiplayer.entities.GameWorld;
+import multiplayer.entities.Player;
 
 public class GameServer {
     // WebSocket server

@@ -1,4 +1,4 @@
-package multiplayer;
+package multiplayer.entities;
 
 import java.util.*;
 import com.google.gson.JsonObject;

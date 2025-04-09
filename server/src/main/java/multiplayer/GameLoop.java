@@ -2,6 +2,8 @@ package multiplayer;
 
 import java.util.Random;
 
+import multiplayer.networking.GameServer;
+
 public class GameLoop implements Runnable {
     private boolean running = true;
     private float deltaTime;

@@ -1,4 +1,4 @@
-package multiplayer;
+package multiplayer.entities;
 
 public class Bullet {
     private String ownerId;

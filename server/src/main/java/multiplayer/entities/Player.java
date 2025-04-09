@@ -1,4 +1,4 @@
-package multiplayer;
+package multiplayer.entities;
 
 public class Player {
     private String id;
