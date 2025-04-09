@@ -5,6 +5,7 @@ signal on_message_received(String)
 # The URL we will connect to.
 @export var websocket_url = "ws://localhost:8887"
 
+
 # Our WebSocketClient instance.
 var socket = WebSocketPeer.new()
 var player_id = -1
@@ -32,7 +33,7 @@ func _process(_delta: float):
 	if state == WebSocketPeer.STATE_OPEN:
 		while socket.get_available_packet_count():
 			var string_message = socket.get_packet().get_string_from_utf8()
-			# print("Got data from server: ", string_message)
+			print("Got data from server: ", string_message)
 			on_message_received.emit(string_message)
 			# print("Got data from server: ", socket.get_packet().get_string_from_utf8())
 

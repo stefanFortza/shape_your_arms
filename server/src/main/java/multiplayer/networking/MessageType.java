@@ -5,7 +5,8 @@ public enum MessageType {
     HIT("Hit"),
     PLAYER_DEATH("PlayerDeath"),
     WELCOME("Welcome"),
-    PLAYER_LEFT("PlayerLeft");
+    PLAYER_LEFT("PlayerLeft"),
+    PLAYER_JOINED("PlayerJoined"),;
 
     private final String type;
 

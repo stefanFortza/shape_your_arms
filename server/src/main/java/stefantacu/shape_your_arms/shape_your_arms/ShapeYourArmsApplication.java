@@ -6,25 +6,34 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import multiplayer.GameLoop;
-import multiplayer.networking.GameServer;
+import multiplayer.networking.GameServerCoordinator;
 
 @SpringBootApplication
 public class ShapeYourArmsApplication {
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext context = SpringApplication.run(ShapeYourArmsApplication.class, args);
+		// ConfigurableApplicationContext context =
+		// SpringApplication.run(ShapeYourArmsApplication.class, args);
 
-		// Get the managed GameServer bean
-		GameServer gameServer = context.getBean(GameServer.class);
+		// // Get the managed GameServer bean
+		// GameServerCoordinator gameServer =
+		// context.getBean(GameServerCoordinator.class);
+
+		// // Start game loop (in background) with the Spring-managed GameServer
+		// GameLoop gameLoop = new GameLoop(gameServer);
+		// new Thread(gameLoop).start();
+
+		GameServerCoordinator gameServer = new GameServerCoordinator();
 
 		// Start game loop (in background) with the Spring-managed GameServer
 		GameLoop gameLoop = new GameLoop(gameServer);
-		new Thread(gameLoop).start();
+		gameLoop.run();
+		// new Thread(gameLoop).start();
 	}
 
-	@Bean
-	public GameServer gameServer() {
-		GameServer gameServer = new GameServer();
-		return gameServer;
-	}
+	// @Bean
+	// public GameServerCoordinator gameServerCoordinator() {
+	// GameServerCoordinator gameServer = new GameServerCoordinator();
+	// return gameServer;
+	// }
 }

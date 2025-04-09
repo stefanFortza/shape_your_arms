@@ -2,15 +2,15 @@ package multiplayer;
 
 import java.util.Random;
 
-import multiplayer.networking.GameServer;
+import multiplayer.networking.GameServerCoordinator;
 
 public class GameLoop implements Runnable {
     private boolean running = true;
     private float deltaTime;
-    private GameServer gameServer;
+    private GameServerCoordinator gameServerInstance;
 
-    public GameLoop(GameServer gameServer) {
-        this.gameServer = gameServer;
+    public GameLoop(GameServerCoordinator gameServerCoordinator) {
+        this.gameServerInstance = gameServerCoordinator;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class GameLoop implements Runnable {
             // System.out.println(deltaTime);
 
             // Update game using deltaTime from the previous frame
-            gameServer.update(deltaTime);
+            gameServerInstance.update(deltaTime);
 
             // Simulate some work with occasional delay
             if (random.nextFloat() < .5f) {

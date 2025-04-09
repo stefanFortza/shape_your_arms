@@ -66,4 +66,33 @@ public class Player {
     public double getRadius() {
         return radius;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
 }
