@@ -33,6 +33,7 @@ public class GameServerCoordinator {
         // Set up signals
 
         socketServer = new WebSocketHandler(PORT, this);
+        socketServer.setReuseAddr(true);
         socketServer.start();
         System.out.println("WebSocket server starting on port " + PORT);
 
