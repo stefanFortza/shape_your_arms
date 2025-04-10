@@ -55,6 +55,7 @@ public class GameLoop implements Runnable {
     }
 
     public void stop() {
+        gameServerInstance.stop();
         running = false;
     }
 }

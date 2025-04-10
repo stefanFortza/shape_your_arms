@@ -19,6 +19,7 @@ public class GameServerCoordinator {
 
     // Signals
     public Signal<OnClientConnectedData> clientConnectedSignal = new Signal<>();
+    public Signal<OnClientDisconnectedData> clientDisconnectedSignal = new Signal<>();
 
     public GameServerCoordinator() {
 
@@ -53,11 +54,12 @@ public class GameServerCoordinator {
     }
 
     public void onClientDisconnected(OnClientDisconnectedData data) {
+        clientDisconnectedSignal.emit(data);
         // // Remove player from game world and network manager
         // gameWorld.onClientDisconnected(playerId);
         // networkManager.onClientDisconnected(playerId);
 
-        // System.out.println("Player disconnected: " + playerId);
+        System.out.println("Player disconnected: " + data.playerId());
     }
 
     public void handleMessage(String playerId, String messageText) {
@@ -81,6 +83,15 @@ public class GameServerCoordinator {
             }
         } catch (Exception e) {
             System.err.println("Error processing message: " + messageText);
+            e.printStackTrace();
+        }
+    }
+
+    public void stop() {
+        try {
+            socketServer.stop();
+        } catch (InterruptedException e) {
+            System.err.println("Error stopping WebSocket server: " + e.getMessage());
             e.printStackTrace();
         }
     }

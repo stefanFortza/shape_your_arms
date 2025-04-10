@@ -10,9 +10,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import multiplayer.entities.Bullet;
+import multiplayer.entities.GameState;
 import multiplayer.entities.GameWorld;
 import multiplayer.entities.Player;
+import multiplayer.entities.game_world_signal_data.OnPlayerJoinedGameWorldData;
+import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
+import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
 
 /**
  * Handles all network communication with clients
@@ -31,18 +35,23 @@ public class GameMessageBroker {
     public void initSignalHandlers() {
         // Initialize signal handlers if needed
         gameServerCoordinator.clientConnectedSignal.connect(this::onClientConnected);
+        gameServerCoordinator.clientDisconnectedSignal.connect(this::onClientDisconnected);
 
-        gameWorld.playerJoinedSignal.connect(this::onPlayerJoined);
+        gameWorld.playerJoinedGameWorldSignal.connect(this::onPlayerJoinedGameWorld);
+        gameWorld.playerLeftGameWorldSignal.connect(this::onPlayerLeftGameWorld);
     }
 
     public void onClientConnected(OnClientConnectedData data) {
         connections.put(data.playerId(), data.connection());
     }
 
-    public void onClientDisconnected(String playerId) {
+    public void onClientDisconnected(OnClientDisconnectedData data) {
+        connections.remove(data.playerId());
     }
 
-    public void onPlayerJoined(Player player) {
+    public void onPlayerJoinedGameWorld(OnPlayerJoinedGameWorldData data) {
+        Player player = data.newPlayer();
+        GameState gameState = data.gameState();
         // Notify all clients about the new player
         JsonObject joinMsg = new JsonObject();
         joinMsg.addProperty("type", MessageType.PLAYER_JOINED.getType());
@@ -52,7 +61,27 @@ public class GameMessageBroker {
 
         System.out.println("Player joined: " + player.getId());
 
+        sendWelcomeMessage(connections.get(player.getId()), player.getId(), player);
+
         broadcast(joinMsg.toString(), player.getId());
+
+        // Send the initial game state to the new player
+        WebSocket conn = connections.get(player.getId());
+        if (conn != null && conn.isOpen()) {
+            sendInitialGameState(conn, gameState);
+        }
+    }
+
+    public void onPlayerLeftGameWorld(OnPlayerLeftGameWorldData data) {
+        Player player = data.player();
+        // Notify all clients about the player leaving
+        JsonObject leaveMsg = new JsonObject();
+        leaveMsg.addProperty("type", MessageType.PLAYER_LEFT.getType());
+        leaveMsg.addProperty("id", player.getId());
+
+        System.out.println("Player left: " + player.getId());
+
+        broadcast(leaveMsg.toString(), player.getId());
     }
 
     public void broadcastPlayerJoinedGameWorld(String playerId, Player player) {
@@ -72,6 +101,15 @@ public class GameMessageBroker {
         gameState.add("bullets", gson.toJsonTree(bullets));
 
         broadcast(gameState.toString());
+    }
+
+    public void sendInitialGameState(WebSocket conn, GameState gameState) {
+        JsonObject initialGameState = new JsonObject();
+        initialGameState.addProperty("type", MessageType.INITIAL_GAME_STATE.getType());
+        initialGameState.add("players", gson.toJsonTree(gameState.players()));
+        initialGameState.add("bullets", gson.toJsonTree(gameState.bullets()));
+
+        conn.send(initialGameState.toString());
     }
 
     public void sendPlayerHit(String playerId, int damage, int currentHealth) {

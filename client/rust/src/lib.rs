@@ -1,5 +1,6 @@
 use godot::prelude::*;
 
+mod main_menu;
 mod network;
 mod player;
 

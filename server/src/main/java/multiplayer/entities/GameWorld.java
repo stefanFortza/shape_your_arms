@@ -8,16 +8,20 @@ import org.java_websocket.WebSocket;
 
 import com.google.gson.JsonObject;
 
+import multiplayer.entities.game_world_signal_data.OnPlayerJoinedGameWorldData;
+import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
 import multiplayer.networking.GameMessageBroker;
 import multiplayer.networking.GameServerCoordinator;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
+import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
 import multiplayer.utils.Signal;
 
 /**
  * Handles all game logic and state
  */
 public class GameWorld {
-    public Signal<Player> playerJoinedSignal = new Signal<>();
+    public Signal<OnPlayerJoinedGameWorldData> playerJoinedGameWorldSignal = new Signal<>();
+    public Signal<OnPlayerLeftGameWorldData> playerLeftGameWorldSignal = new Signal<>();
 
     private final Map<String, Player> players = new ConcurrentHashMap<>();
     private final List<Bullet> bullets = new ArrayList<>();
@@ -32,6 +36,7 @@ public class GameWorld {
     public void initSignalHandlers() {
         // Initialize signal handlers if needed
         gameServerCoordinator.clientConnectedSignal.connect(this::onClientConnected);
+        gameServerCoordinator.clientDisconnectedSignal.connect(this::onClientDisconnected);
     }
 
     public void onClientConnected(OnClientConnectedData data) {
@@ -39,11 +44,20 @@ public class GameWorld {
         Player newPlayer = new Player(data.playerId(), Math.random() * 800, Math.random() * 600);
         players.put(data.playerId(), newPlayer);
 
-        playerJoinedSignal.emit(newPlayer);
+        playerJoinedGameWorldSignal.emit(new OnPlayerJoinedGameWorldData(newPlayer, getGameState()));
     }
 
-    public void onClientDisconnected(String playerId) {
-        players.remove(playerId);
+    public void onClientDisconnected(OnClientDisconnectedData data) {
+        Player player = players.remove(data.playerId());
+
+        playerLeftGameWorldSignal.emit(new OnPlayerLeftGameWorldData(player));
+    }
+
+    public GameState getGameState() {
+        // Return a copy of the game state
+        Map<String, Player> playersCopy = new HashMap<>(players);
+        List<Bullet> bulletsCopy = new ArrayList<>(bullets);
+        return new GameState(playersCopy, bulletsCopy);
     }
 
     public void handlePlayerMove(String playerId, JsonObject message) {

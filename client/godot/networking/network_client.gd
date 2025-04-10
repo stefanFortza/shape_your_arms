@@ -33,7 +33,7 @@ func _process(_delta: float):
 	if state == WebSocketPeer.STATE_OPEN:
 		while socket.get_available_packet_count():
 			var string_message = socket.get_packet().get_string_from_utf8()
-			print("Got data from server: ", string_message)
+			# print("Got data from server: ", string_message)
 			on_message_received.emit(string_message)
 			# print("Got data from server: ", socket.get_packet().get_string_from_utf8())
 
