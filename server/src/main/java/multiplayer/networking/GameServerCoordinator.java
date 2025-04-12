@@ -26,6 +26,7 @@ public class GameServerCoordinator {
     // Signals
     public Signal<OnClientConnectedData> clientConnectedSignal = new Signal<>();
     public Signal<OnClientDisconnectedData> clientDisconnectedSignal = new Signal<>();
+    public Signal<MoveMessageFromClient> moveMessageReceivedSignal = new Signal<>();
 
     public GameServerCoordinator() {
 
@@ -69,15 +70,18 @@ public class GameServerCoordinator {
         System.out.println("Player disconnected: " + data.playerId());
     }
 
+    // When we receive a message from a client, we parse it and handle it
     public void onMessageReceived(OnMessageReceivedData data) {
         String playerId = data.playerId();
         String messageText = data.message();
         WebSocket conn = data.connection();
+        System.out.println("Unparsed message: " + messageText);
 
         try {
             GameMessage parsedMessage = MessageFactory.parseMessage(messageText);
 
             if (parsedMessage instanceof MoveMessageFromClient message) {
+                moveMessageReceivedSignal.emit(message);
                 System.out.println("Move message received: " + message.getDirection());
             }
             // } else if (parsedMessage instanceof ShootMessage message) {

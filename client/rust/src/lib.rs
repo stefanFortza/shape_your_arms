@@ -4,6 +4,7 @@ mod main_game;
 mod main_menu;
 mod network;
 mod player;
+mod utils;
 
 struct MyExtension;
 

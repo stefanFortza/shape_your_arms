@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://m4vwtjqvbguk" path="res://scenes/main_game/player_scene.tscn" id="1_2c62f"]
 [ext_resource type="PackedScene" uid="uid://cx2xkh3iumsts" path="res://scenes/main_game/main_game_ui.tscn" id="3_gwc6n"]
-[ext_resource type="PackedScene" uid="uid://cplxw8svw8xld" path="res://networking/network_client.tscn" id="3_gyfs4"]
+[ext_resource type="PackedScene" uid="uid://cplxw8svw8xld" path="res://scenes/network_manager.tscn" id="3_gyfs4"]
 
 [node name="MainScene" type="Node2D"]
 
@@ -10,7 +10,7 @@
 
 [node name="GameWorldManager" type="Node" parent="."]
 
-[node name="NetworkClient" parent="." instance=ExtResource("3_gyfs4")]
+[node name="NetworkManager" parent="." instance=ExtResource("3_gyfs4")]
 
 [node name="BackGround" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -27,4 +27,4 @@ grow_vertical = 2
 position = Vector2(458, 230)
 scale = Vector2(0.6, 0.6)
 
-[connection signal="player_moved" from="PlayerScene" to="NetworkClient" method="_on_player_moved"]
+[connection signal="player_moved" from="PlayerScene" to="NetworkManager" method="_on_player_moved"]

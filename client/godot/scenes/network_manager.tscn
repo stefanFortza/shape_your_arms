@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://cplxw8svw8xld"]
+
+[ext_resource type="Script" uid="uid://cv8sv70gptibc" path="res://networking/networnk_manager.gd" id="2_fhcba"]
+
+[node name="NetworkManager" type="Node"]
+
+[node name="MessageBroker" type="Node" parent="."]
+script = ExtResource("2_fhcba")
+
+[node name="NetworkClient" type="NetworkClient" parent="."]
+websocket_url = "ws://localhost:8887"

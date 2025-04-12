@@ -64,7 +64,8 @@ func send_message(message: MessageTypes.Message) -> void:
 		
 	var dict = message.to_dict()
 	var json_string = JSON.stringify(dict)
-	socket.send_text(json_string)
+	print("Sending message: ", json_string)
+	# socket.send_text(json_string)
 
 # # Process incoming message and emit appropriate signals
 # func process_message(json_string: String) -> void:

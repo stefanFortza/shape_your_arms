@@ -62,4 +62,12 @@ public class Vector2 {
     public double dotProduct(Vector2 other) {
         return this.x * other.x + this.y * other.y;
     }
+
+    @Override
+    public String toString() {
+        return "Vector2{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

@@ -100,6 +100,7 @@ public class GameMessageBroker {
     }
 
     public void sendInitialGameState(WebSocket conn, GameState gameState) {
+
         JsonObject initialGameState = new JsonObject();
         initialGameState.addProperty("type", MessageType.INITIAL_GAME_STATE.getType());
         initialGameState.add("players", gson.toJsonTree(gameState.players()));

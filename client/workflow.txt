@@ -1,0 +1,5 @@
+Server → WebSocket → NetworkClient → Rust NetworkManager → 
+JSON Parsing & Deserialization → Typed Data → Godot Signals → Game Objects
+
+Game Objects → Godot Signals → Typed Data → Rust NetworkManager → 
+JSON Serialization → NetworkClient → WebSocket → Server

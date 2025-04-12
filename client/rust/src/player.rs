@@ -1,8 +1,7 @@
-use godot::classes::{
-    Button, CanvasLayer, CharacterBody2D, ICanvasLayer, ICharacterBody2D, Input, Label, Timer,
-};
+use godot::classes::{CharacterBody2D, ICharacterBody2D, Input};
 use godot::obj::WithBaseField;
 use godot::prelude::*;
+use serde_json::json;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
@@ -38,6 +37,15 @@ impl Player {
 
         if direction.length() > 0.0 {
             direction = direction.normalized();
+
+            let dir = json! ({
+                    "x": direction.x,
+                    "y": direction.y
+            });
+
+            let direction_serializable = (direction.x, direction.y);
+            godot_print!("Direction: {}", dir.to_string());
+            godot_print!("Direction: {}", dir);
         }
 
         direction
