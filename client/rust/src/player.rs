@@ -38,14 +38,10 @@ impl Player {
         if direction.length() > 0.0 {
             direction = direction.normalized();
 
-            let dir = json! ({
-                    "x": direction.x,
-                    "y": direction.y
-            });
-
-            let direction_serializable = (direction.x, direction.y);
-            godot_print!("Direction: {}", dir.to_string());
-            godot_print!("Direction: {}", dir);
+            // let dir = json! ({
+            //         "x": direction.x,
+            //         "y": direction.y
+            // });
         }
 
         direction
@@ -75,16 +71,15 @@ impl ICharacterBody2D for Player {
         }
     }
 
-    fn ready(&mut self) {
-        godot_print!("Player is ready!");
-    }
+    fn ready(&mut self) {}
 
     fn physics_process(&mut self, delta: f64) {
         let direction = self.get_input_direction();
 
         if direction != Vector2::ZERO {
-            self.base_mut()
-                .emit_signal("player_moved", &[direction.to_variant()]);
+            self.signals().player_moved().emit(direction);
+            // self.base_mut()
+            //     .emit_signal("player_moved", &[direction.to_variant()]);
         }
         // godot_print!("{}", delta);
         self.update_position(direction, delta);

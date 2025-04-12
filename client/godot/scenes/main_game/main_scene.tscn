@@ -2,15 +2,13 @@
 
 [ext_resource type="PackedScene" uid="uid://m4vwtjqvbguk" path="res://scenes/main_game/player_scene.tscn" id="1_2c62f"]
 [ext_resource type="PackedScene" uid="uid://cx2xkh3iumsts" path="res://scenes/main_game/main_game_ui.tscn" id="3_gwc6n"]
-[ext_resource type="PackedScene" uid="uid://cplxw8svw8xld" path="res://scenes/network_manager.tscn" id="3_gyfs4"]
+[ext_resource type="PackedScene" uid="uid://cplxw8svw8xld" path="res://scenes/network_scene.tscn" id="3_gyfs4"]
 
 [node name="MainScene" type="Node2D"]
 
 [node name="UI" parent="." instance=ExtResource("3_gwc6n")]
 
 [node name="GameWorldManager" type="Node" parent="."]
-
-[node name="NetworkManager" parent="." instance=ExtResource("3_gyfs4")]
 
 [node name="BackGround" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -23,8 +21,8 @@ offset_bottom = 869.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PlayerScene" parent="." instance=ExtResource("1_2c62f")]
+[node name="Player" parent="." instance=ExtResource("1_2c62f")]
 position = Vector2(458, 230)
 scale = Vector2(0.6, 0.6)
 
-[connection signal="player_moved" from="PlayerScene" to="NetworkManager" method="_on_player_moved"]
+[node name="Network" parent="." instance=ExtResource("3_gyfs4")]

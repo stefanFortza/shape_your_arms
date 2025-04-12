@@ -5,7 +5,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4flbx"]
 size = Vector2(100, 100)
 
-[node name="PlayerScene" type="Player"]
+[node name="Player" type="Player" groups=["player"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_4flbx")

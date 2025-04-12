@@ -28,7 +28,6 @@ impl INode for NetworkClient {
     }
 
     fn ready(&mut self) {
-        godot_print!("NetworkClient is ready");
         // Default URL if not set in the editor
         if self.websocket_url.is_empty() {
             self.websocket_url = "ws://localhost:8887".into();
