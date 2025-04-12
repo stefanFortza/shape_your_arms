@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://cx2xkh3iumsts"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+
+[node name="MainGameUI" type="MainGameUI" parent="."]
+
+[node name="BackButton" type="Button" parent="MainGameUI"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 188.0
+offset_bottom = 98.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_colors/font_hover_color = Color(0.94902, 0.807843, 0.294118, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "Back"
+
+[connection signal="pressed" from="MainGameUI/BackButton" to="MainGameUI" method="_on_back_button_pressed"]

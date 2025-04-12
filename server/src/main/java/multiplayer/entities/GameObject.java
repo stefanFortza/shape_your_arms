@@ -2,10 +2,10 @@ package multiplayer.entities;
 
 public abstract class GameObject {
     protected Vector2 position;
-    private double rotation;
+    protected double rotation;
 
     public GameObject(Vector2 position) {
-        this.position = new Vector2(x, y);
+        this.position = position;
     }
 
     public Vector2 getPosition() {

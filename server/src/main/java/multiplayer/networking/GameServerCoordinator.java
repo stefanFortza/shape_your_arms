@@ -1,11 +1,17 @@
 package multiplayer.networking;
 
+import org.java_websocket.WebSocket;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import multiplayer.entities.GameWorld;
+import multiplayer.networking.messages.GameMessage;
+import multiplayer.networking.messages.MessageFactory;
+import multiplayer.networking.messages.MoveMessageFromClient;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
 import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
+import multiplayer.networking.web_socket_signal_data.OnMessageReceivedData;
 import multiplayer.utils.Signal;
 
 public class GameServerCoordinator {
@@ -41,6 +47,7 @@ public class GameServerCoordinator {
         // Connect signals to handlers
         socketServer.clientConnectedSignal.connect(this::onClientConnected);
         socketServer.clientDisconnectedSignal.connect(this::onClientDisconnected);
+        socketServer.messageReceivedSignal.connect(this::onMessageReceived);
     }
 
     public void update(float deltaTime) {
@@ -62,25 +69,34 @@ public class GameServerCoordinator {
         System.out.println("Player disconnected: " + data.playerId());
     }
 
-    public void handleMessage(String playerId, String messageText) {
+    public void onMessageReceived(OnMessageReceivedData data) {
+        String playerId = data.playerId();
+        String messageText = data.message();
+        WebSocket conn = data.connection();
+
         try {
-            // Parse the JSON message
-            JsonObject message = JsonParser.parseString(messageText).getAsJsonObject();
-            String type = message.get("type").getAsString();
+            GameMessage parsedMessage = MessageFactory.parseMessage(messageText);
 
-            // Delegate to appropriate handler
-            switch (type) {
-                case "move":
-                    gameWorld.handlePlayerMove(playerId, message);
-                    break;
-
-                case "shoot":
-                    gameWorld.handlePlayerShoot(playerId, message);
-                    break;
-
-                default:
-                    System.out.println("Unknown message type: " + type);
+            if (parsedMessage instanceof MoveMessageFromClient message) {
+                System.out.println("Move message received: " + message.getDirection());
             }
+            // } else if (parsedMessage instanceof ShootMessage message) {
+            // System.out.println("Shoot message received: " + message.getRotation());
+            // }
+
+            // // Delegate to appropriate handler
+            // switch (type) {
+            // case "move":
+            // gameWorld.handlePlayerMove(playerId, parsedMessage);
+            // break;
+
+            // case "shoot":
+            // gameWorld.handlePlayerShoot(playerId, parsedMessage);
+            // break;
+
+            // default:
+            // System.out.println("Unknown message type: " + type);
+            // }
         } catch (Exception e) {
             System.err.println("Error processing message: " + messageText);
             e.printStackTrace();

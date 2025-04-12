@@ -8,5 +8,3 @@ script = ExtResource("1_db7wg")
 
 [node name="NetworkManager" type="Node" parent="."]
 script = ExtResource("2_fhcba")
-
-[connection signal="on_message_received" from="." to="NetworkManager" method="_on_network_client_on_message_received"]

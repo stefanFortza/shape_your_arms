@@ -40,8 +40,9 @@ public class GameWorld {
     }
 
     public void onClientConnected(OnClientConnectedData data) {
+
+        Player newPlayer = new Player(Vector2.getRandomVector01().multiply(800), data.playerId());
         // Create a new player at a random position
-        Player newPlayer = new Player(data.playerId(), Math.random() * 800, Math.random() * 600);
         players.put(data.playerId(), newPlayer);
 
         playerJoinedGameWorldSignal.emit(new OnPlayerJoinedGameWorldData(newPlayer, getGameState()));
@@ -61,13 +62,15 @@ public class GameWorld {
     }
 
     public void handlePlayerMove(String playerId, JsonObject message) {
+        // TODO: Handle player movement
         Player player = players.get(playerId);
         if (player != null) {
             double x = message.get("x").getAsDouble();
             double y = message.get("y").getAsDouble();
+
             double rotation = message.has("rotation") ? message.get("rotation").getAsDouble() : player.getRotation();
 
-            player.setPosition(x, y);
+            player.setPosition(new Vector2(x, y));
             player.setRotation(rotation);
 
         }
@@ -82,15 +85,16 @@ public class GameWorld {
             double dirX = Math.cos(rotation);
             double dirY = Math.sin(rotation);
 
+            // TODO
             // Create bullet at player's position
-            Bullet bullet = new Bullet(
-                    playerId,
-                    player.getX(),
-                    player.getY(),
-                    dirX,
-                    dirY);
+            // Bullet bullet = new Bullet(
+            // playerId,
+            // player.getX(),
+            // player.getY(),
+            // dirX,
+            // dirY);
 
-            bullets.add(bullet);
+            // bullets.add(bullet);
 
         }
     }

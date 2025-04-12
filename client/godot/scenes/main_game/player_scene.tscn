@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://m4vwtjqvbguk"]
+
+[ext_resource type="Texture2D" uid="uid://bwnmmb0wvnyqm" path="res://godot-rust.png" id="1_crmta"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4flbx"]
+size = Vector2(100, 100)
+
+[node name="PlayerScene" type="Player"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_4flbx")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_crmta")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true

@@ -1,13 +1,19 @@
-package multiplayer.networking;
+package multiplayer.networking.messages;
 
 public enum MessageType {
+    // Incoming messages
+    PLAYER_SHOOT("PlayerShoot"),
+    PLAYER_MOVE_FROM_CLIENT("PlayerMoveFromClient"),
+
+    // Outgoing messages
     GAME_STATE("GameState"),
     HIT("Hit"),
     PLAYER_DEATH("PlayerDeath"),
     WELCOME("Welcome"),
     PLAYER_LEFT("PlayerLeft"),
     PLAYER_JOINED("PlayerJoined"),
-    INITIAL_GAME_STATE("InitialGameState");
+    INITIAL_GAME_STATE("InitialGameState"),
+    PLAYER_MOVE_FROM_SERVER("PlayerMoveFromServer");
 
     private final String type;
 
