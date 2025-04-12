@@ -20,8 +20,13 @@ impl INode for NetwornkManager {
         godot_print!("NetworkManager is ready");
 
         let player = self.find_player_node();
-        if let Some(player) = player {
+        if let Some(mut player) = player {
             godot_print!("Player node found: {:?}", player);
+
+            player
+                .signals()
+                .player_moved()
+                .connect_obj(&self.to_gd(), Self::on_player_moved);
         } else {
             godot_print!("Player node not found");
         }
@@ -34,6 +39,11 @@ impl NetwornkManager {
     fn on_message_received(&self, message: GString) {
         // Handle incoming messages
         godot_print!("Message received: {}", message);
+    }
+
+    fn on_player_moved(&mut self, direction: Vector2) {
+        // Handle player movement
+        godot_print!("Player moved: {:?}", direction);
     }
 
     #[func]
