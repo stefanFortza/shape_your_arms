@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use godot::prelude::GodotConvert;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::serializable_vector2::SerializableVector2;

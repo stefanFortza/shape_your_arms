@@ -1,7 +1,10 @@
+use godot::classes::class_macros::registry::signal;
 use godot::classes::{INode, Node};
 use godot::prelude::*;
 
 use crate::player::Player;
+
+use super::messages::message_type::MessageType;
 
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -33,13 +36,50 @@ impl INode for NetwornkManager {
     }
 }
 
+struct Test {
+    x: f32,
+    y: f32,
+}
+
+impl ToGodot for Test {
+    fn to_godot(&self) -> Self::ToVia<'_> {
+        todo!()
+    }
+
+    fn to_variant(&self) -> Variant {
+        self.to_godot().to_ffi().ffi_to_variant()
+    }
+
+    type ToVia<'v>
+    where
+        Self: 'v;
+}
+
 #[godot_api]
 impl NetwornkManager {
+    #[signal]
+    pub fn message_serialized(message: GString);
+
+    #[func]
+    fn test_func(&self, test: Test) {
+        godot_print!("Test function called with: {:?}", test);
+    }
+
     #[func]
     fn on_message_received(&self, message: GString) {
         // Handle incoming messages
         godot_print!("Message received: {}", message);
     }
+
+    // #[func]
+    // fn send_message(&self, message: MessageType) {
+    //     // Serialize the message to JSON
+    //     let json_message = serde_json::to_string(&message).unwrap();
+    //     godot_print!("Sending message: {}", json_message);
+
+    //     // Send the message over the network
+    //     // self.socket.send_text(&json_message);
+    // }
 
     fn on_player_moved(&mut self, direction: Vector2) {
         // Handle player movement
