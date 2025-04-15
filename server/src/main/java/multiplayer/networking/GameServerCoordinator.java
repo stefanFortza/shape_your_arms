@@ -20,7 +20,7 @@ public class GameServerCoordinator {
 
     // Game logic components
     private final GameWorld gameWorld;
-    private final GameMessageBroker networkManager;
+    private final NetworkManager networkManager;
 
     // Signals
     public Signal<OnClientConnectedData> clientConnectedSignal = new Signal<>("clientConnectedSignal");
@@ -30,7 +30,7 @@ public class GameServerCoordinator {
     public GameServerCoordinator() {
 
         // Initialize components
-        this.networkManager = new GameMessageBroker(null, this);
+        this.networkManager = new NetworkManager(null, this);
         this.gameWorld = new GameWorld(networkManager, this);
         this.networkManager.setGameWorld(gameWorld);
 

@@ -24,13 +24,13 @@ import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
 /**
  * Handles all network communication with clients
  */
-public class GameMessageBroker {
+public class NetworkManager {
     private final Map<String, WebSocket> connections = new ConcurrentHashMap<>();
     private final Gson gson = new Gson();
     private GameWorld gameWorld;
     private GameServerCoordinator gameServerCoordinator;
 
-    public GameMessageBroker(GameWorld gameWorld, GameServerCoordinator gameServerCoordinator) {
+    public NetworkManager(GameWorld gameWorld, GameServerCoordinator gameServerCoordinator) {
         this.gameWorld = gameWorld;
         this.gameServerCoordinator = gameServerCoordinator;
     }
@@ -57,6 +57,7 @@ public class GameMessageBroker {
         GameState gameState = data.gameState();
         PlayerJoinedMessage playerJoinedMessage = new PlayerJoinedMessage(player.getId(),
                 player.getTransform().getTranslation());
+
         String joinMsg = MessageFactory.serializeMessage(playerJoinedMessage);
         // Notify all clients about the new player
         // JsonObject joinMsg = new JsonObject();
@@ -106,6 +107,7 @@ public class GameMessageBroker {
         initialGameState.addProperty("type", MessageType.INITIAL_GAME_STATE.getType());
         initialGameState.add("players", gson.toJsonTree(gameState.players()));
         initialGameState.add("bullets", gson.toJsonTree(gameState.bullets()));
+        System.out.println(initialGameState.toString());
 
         conn.send(initialGameState.toString());
     }

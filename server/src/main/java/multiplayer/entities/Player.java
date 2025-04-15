@@ -4,6 +4,8 @@ import org.dyn4j.geometry.Geometry;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
 
+import multiplayer.entities.entities_data.PlayerData;
+
 public class Player extends GameObject {
     private String id;
     private int health = 100;
@@ -15,9 +17,15 @@ public class Player extends GameObject {
 
         this.radius = 0.5; // Set the radius of the player
 
-        // this.addFixture(Geometry.createRectangle(1.0, 1.5));
-        // this.addFixture(Geometry.createCircle(0.35));
-        // this.setMass(MassType.NORMAL);
+        this.addFixture(Geometry.createRectangle(1.0, 1.5));
+        this.addFixture(Geometry.createCircle(0.35));
+        this.setMass(MassType.NORMAL);
+        this.setLinearVelocity(new Vector2(1, 0));
+    }
+
+    public PlayerData getPlayerData() {
+        PlayerData playerData = new PlayerData(this);
+        return playerData;
     }
 
     public void takeDamage(int damage) {

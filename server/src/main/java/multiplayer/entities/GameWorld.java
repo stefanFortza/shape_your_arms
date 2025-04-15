@@ -8,13 +8,16 @@ import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import multiplayer.entities.entities_data.PlayerData;
 import multiplayer.entities.game_world_signal_data.OnPlayerJoinedGameWorldData;
 import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
 import multiplayer.gui.GameWorldGUI;
 import multiplayer.gui.framework.SimulationBody;
-import multiplayer.networking.GameMessageBroker;
+import multiplayer.networking.NetworkManager;
+import multiplayer.networking.messages.MessageType;
 import multiplayer.networking.GameServerCoordinator;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
 import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
@@ -31,11 +34,12 @@ public class GameWorld {
     private final World<SimulationBody> world = new World<>();
     private final Map<String, Player> players = new ConcurrentHashMap<>();
     private final List<Bullet> bullets = new ArrayList<>();
-    private final GameMessageBroker messageBroker;
+    private final NetworkManager messageBroker;
     private final GameServerCoordinator gameServerCoordinator;
     private final GameWorldGUI gameWorldGUI;
+    private float timer = 0;
 
-    public GameWorld(GameMessageBroker messageBroker, GameServerCoordinator gameServerCoordinator) {
+    public GameWorld(NetworkManager messageBroker, GameServerCoordinator gameServerCoordinator) {
         this.messageBroker = messageBroker;
         this.gameServerCoordinator = gameServerCoordinator;
 
@@ -56,7 +60,6 @@ public class GameWorld {
         // Create a new player at a random position
         players.put(data.playerId(), newPlayer);
         this.world.addBody(newPlayer);
-        // newPlayer.setLinearVelocity(new Vector2(1, 0));
 
         playerJoinedGameWorldSignal.emit(new OnPlayerJoinedGameWorldData(newPlayer, getGameState()));
     }
@@ -68,8 +71,16 @@ public class GameWorld {
     }
 
     public GameState getGameState() {
+
+        Map<String, PlayerData> playersCopy = new HashMap<>();
+
+        for (Map.Entry<String, Player> entry : players.entrySet()) {
+            Player player = entry.getValue();
+            playersCopy.put(entry.getKey(), player.getPlayerData());
+        }
+
         // Return a copy of the game state
-        Map<String, Player> playersCopy = new HashMap<>(players);
+        // Map<String, Player> playersCopy = new HashMap<>(players);
         List<Bullet> bulletsCopy = new ArrayList<>(bullets);
         return new GameState(playersCopy, bulletsCopy);
     }
@@ -114,6 +125,20 @@ public class GameWorld {
     }
 
     public void update(float deltaTime) {
+        timer += deltaTime;
+        if (timer > 1) {
+            timer = 0;
+            JsonObject initialGameState = new JsonObject();
+            Gson gson = new Gson();
+            initialGameState.addProperty("type", MessageType.INITIAL_GAME_STATE.getType());
+            initialGameState.add("players", gson.toJsonTree(getGameState().players()));
+            initialGameState.add("bullets", gson.toJsonTree(getGameState().bullets()));
+            System.out.println(initialGameState.toString());
+
+            // Broadcast the game state to all clients
+            // gameServerCoordinator.broadcastGameState(players, bullets);
+
+        }
         this.gameWorldGUI.gameLoop();
         // this.world.update(deltaTime);
         updateBullets(deltaTime);
