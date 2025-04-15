@@ -4,7 +4,6 @@ package multiplayer.entities;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
 
@@ -18,6 +17,7 @@ import multiplayer.gui.GameWorldGUI;
 import multiplayer.gui.framework.SimulationBody;
 import multiplayer.networking.NetworkManager;
 import multiplayer.networking.messages.MessageType;
+import multiplayer.networking.messages.move_messages.MoveMessageFromClient;
 import multiplayer.networking.GameServerCoordinator;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
 import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
@@ -52,6 +52,7 @@ public class GameWorld {
         // Initialize signal handlers if needed
         gameServerCoordinator.clientConnectedSignal.connect(this::onClientConnected);
         gameServerCoordinator.clientDisconnectedSignal.connect(this::onClientDisconnected);
+        gameServerCoordinator.moveMessageReceivedSignal.connect(this::onMoveMessageReceived);
     }
 
     public void onClientConnected(OnClientConnectedData data) {
@@ -85,7 +86,20 @@ public class GameWorld {
         return new GameState(playersCopy, bulletsCopy);
     }
 
-    public void handlePlayerMove(String playerId, JsonObject message) {
+    public void onMoveMessageReceived(MoveMessageFromClient message) {
+        Vector2 direction = message.getDirection().getNormalized();
+
+        switch (message.getMoveMessageType()) {
+            case MOVEMENT_STARTED:
+                // Handle player movement start
+                System.out.println("Player " + message.getPlayerId() + " started moving in direction: " + direction);
+                players.get(message.getPlayerId()).setLinearVelocity(direction);
+                break;
+            case MOVEMENT_STOPPED:
+                // Handle player movement stop
+                System.out.println("Player " + message.getPlayerId() + " stopped moving");
+                break;
+        }
         // TODO: Handle player movement
         // Player player = players.get(playerId);
         // if (player != null) {
@@ -104,11 +118,11 @@ public class GameWorld {
     public void handlePlayerShoot(String playerId, JsonObject message) {
         Player player = players.get(playerId);
         if (player != null) {
-            double rotation = message.get("rotation").getAsDouble();
+            // double rotation = message.get("rotation").getAsDouble();
 
             // Calculate direction vector from rotation
-            double dirX = Math.cos(rotation);
-            double dirY = Math.sin(rotation);
+            // double dirX = Math.cos(rotation);
+            // double dirY = Math.sin(rotation);
 
             // TODO
             // Create bullet at player's position
@@ -133,12 +147,13 @@ public class GameWorld {
             initialGameState.addProperty("type", MessageType.INITIAL_GAME_STATE.getType());
             initialGameState.add("players", gson.toJsonTree(getGameState().players()));
             initialGameState.add("bullets", gson.toJsonTree(getGameState().bullets()));
-            System.out.println(initialGameState.toString());
+            // System.out.println(initialGameState.toString());
 
             // Broadcast the game state to all clients
             // gameServerCoordinator.broadcastGameState(players, bullets);
 
         }
+
         this.gameWorldGUI.gameLoop();
         // this.world.update(deltaTime);
         updateBullets(deltaTime);

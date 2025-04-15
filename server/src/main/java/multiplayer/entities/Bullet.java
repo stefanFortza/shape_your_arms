@@ -4,7 +4,7 @@ import org.dyn4j.geometry.Vector2;
 
 public class Bullet extends GameObject {
     private String ownerId;
-    private double speed = 500; // pixels per second
+    // private double speed = 500; // pixels per second
     private int damage = 10;
     private double lifetime = 2.0; // seconds until bullet expires
 

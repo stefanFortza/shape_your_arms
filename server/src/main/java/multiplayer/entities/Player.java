@@ -20,7 +20,7 @@ public class Player extends GameObject {
         this.addFixture(Geometry.createRectangle(1.0, 1.5));
         this.addFixture(Geometry.createCircle(0.35));
         this.setMass(MassType.NORMAL);
-        this.setLinearVelocity(new Vector2(1, 0));
+        // this.setLinearVelocity(new Vector2(1, 0));
     }
 
     public PlayerData getPlayerData() {

@@ -1,19 +1,20 @@
 package multiplayer.networking;
 
+import org.apache.log4j.Logger;
 import org.java_websocket.WebSocket;
 
 import multiplayer.entities.GameWorld;
-import multiplayer.gui.GameWorldGUI;
-import multiplayer.gui.Tank;
 import multiplayer.networking.messages.GameMessage;
 import multiplayer.networking.messages.MessageFactory;
-import multiplayer.networking.messages.MoveMessageFromClient;
+import multiplayer.networking.messages.move_messages.MoveMessageFromClient;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
 import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
 import multiplayer.networking.web_socket_signal_data.OnMessageReceivedData;
 import multiplayer.utils.Signal;
 
 public class GameServerCoordinator {
+    private static Logger logger = Logger.getLogger(GameServerCoordinator.class);
+
     // WebSocket server
     private WebSocketHandler socketServer;
     private final int PORT = 8887;

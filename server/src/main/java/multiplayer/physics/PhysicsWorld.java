@@ -1,6 +1,5 @@
 package multiplayer.physics;
 
-import org.dyn4j.dynamics.Body;
 import org.dyn4j.world.World;
 
 import multiplayer.gui.framework.SimulationBody;

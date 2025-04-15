@@ -1,9 +1,11 @@
-package multiplayer.networking.messages;
+package multiplayer.networking.messages.move_messages;
 
 import org.dyn4j.geometry.Vector2;
 
-public class MoveMessageFromServer extends GameMessage {
+import multiplayer.networking.messages.GameMessage;
+import multiplayer.networking.messages.MessageType;
 
+public class MoveMessageFromServer extends GameMessage {
     private Vector2 position;
 
     protected MoveMessageFromServer(Vector2 position) {

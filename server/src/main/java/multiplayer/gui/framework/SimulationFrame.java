@@ -67,8 +67,6 @@ import multiplayer.gui.framework.input.MousePickingInputHandler;
 import multiplayer.gui.framework.input.MouseZoomInputHandler;
 import multiplayer.gui.framework.input.ToggleStateKeyboardInputHandler;
 
-// TODO create a streaming world example
-
 /**
  * A simple framework for building samples.
  * 

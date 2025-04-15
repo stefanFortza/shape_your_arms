@@ -1,6 +1,7 @@
 // Rename to GameMessageBroker
 package multiplayer.networking;
 
+import org.apache.log4j.Logger;
 import org.java_websocket.WebSocket;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,8 @@ import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
  * Handles all network communication with clients
  */
 public class NetworkManager {
+    private static Logger logger = Logger.getLogger(NetworkManager.class);
+
     private final Map<String, WebSocket> connections = new ConcurrentHashMap<>();
     private final Gson gson = new Gson();
     private GameWorld gameWorld;
@@ -107,7 +110,9 @@ public class NetworkManager {
         initialGameState.addProperty("type", MessageType.INITIAL_GAME_STATE.getType());
         initialGameState.add("players", gson.toJsonTree(gameState.players()));
         initialGameState.add("bullets", gson.toJsonTree(gameState.bullets()));
-        System.out.println(initialGameState.toString());
+        // logger.info("Sending initial game state to " +
+        // conn.getRemoteSocketAddress());
+        // System.out.println(initialGameState.toString());
 
         conn.send(initialGameState.toString());
     }
