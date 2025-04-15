@@ -14,10 +14,11 @@ public class Player extends GameObject {
     public Player(Vector2 position, String id) {
         super(position);
         this.id = id;
+        this.setAtRestDetectionEnabled(false);
 
-        this.radius = 0.5; // Set the radius of the player
+        // this.radius = 0.5; // Set the radius of the player
 
-        this.addFixture(Geometry.createRectangle(1.0, 1.5));
+        // this.addFixture(Geometry.createRectangle(1.0, 1.5));
         this.addFixture(Geometry.createCircle(0.35));
         this.setMass(MassType.NORMAL);
         // this.setLinearVelocity(new Vector2(1, 0));

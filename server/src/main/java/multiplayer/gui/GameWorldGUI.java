@@ -185,6 +185,7 @@ public class GameWorldGUI extends SimulationFrame {
         tank.addFixture(Geometry.createRectangle(1.0, 1.5));
         tank.addFixture(Geometry.createCircle(0.35));
         tank.setMass(MassType.NORMAL);
+        // tank.translate(0.0, -15.0);
         this.world.addBody(tank);
 
         barrel = new SimulationBody();
@@ -215,6 +216,8 @@ public class GameWorldGUI extends SimulationFrame {
         fj.setMaximumTorque(0.2);
         fj.setCollisionAllowed(true);
         this.world.addJoint(fj);
+
+        tank.translate(0.0, -5.0);
     }
 
     /*

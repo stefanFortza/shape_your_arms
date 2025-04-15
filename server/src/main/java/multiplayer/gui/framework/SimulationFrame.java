@@ -334,7 +334,7 @@ public abstract class SimulationFrame extends JFrame {
 	 * The method calling the necessary methods to update
 	 * the game, graphics, and poll for input.
 	 */
-	public void gameLoop() {
+	public void gameLoop(float deltaTime) {
 		// get the graphics object to render to
 		Graphics2D g = (Graphics2D) this.canvas.getBufferStrategy().getDrawGraphics();
 
@@ -361,20 +361,23 @@ public abstract class SimulationFrame extends JFrame {
 		this.render(g, elapsedTime);
 		g.setTransform(tx);
 
+		boolean stepped = this.world.update(deltaTime);
+
 		// update the World
-		if (!this.paused.isActive()) {
-			// long s = System.nanoTime();
-			boolean stepped = this.world.update(elapsedTime);
-			// long e = System.nanoTime();
-			if (stepped) {
-				this.stepNumber++;
-				// System.out.println(((e - s) / 1000000.0) + " ms");
-			}
-		} else if (this.step.isActive()) {
-			this.world.step(1);
-			this.stepNumber++;
-			this.step.setActive(false);
-		}
+		// if (!this.paused.isActive()) {
+		// // long s = System.nanoTime();
+		// // boolean stepped = this.world.update(elapsedTime);
+		// boolean stepped = this.world.update(deltaTime);
+		// // long e = System.nanoTime();
+		// if (stepped) {
+		// this.stepNumber++;
+		// // System.out.println(((e - s) / 1000000.0) + " ms");
+		// }
+		// } else if (this.step.isActive()) {
+		// this.world.step(1);
+		// this.stepNumber++;
+		// this.step.setActive(false);
+		// }
 
 		this.handleEvents();
 

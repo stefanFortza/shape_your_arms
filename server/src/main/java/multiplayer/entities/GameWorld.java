@@ -68,6 +68,8 @@ public class GameWorld {
     public void onClientDisconnected(OnClientDisconnectedData data) {
         Player player = players.remove(data.playerId());
 
+        this.world.removeBody(player);
+
         playerLeftGameWorldSignal.emit(new OnPlayerLeftGameWorldData(player));
     }
 
@@ -93,7 +95,15 @@ public class GameWorld {
             case MOVEMENT_STARTED:
                 // Handle player movement start
                 System.out.println("Player " + message.getPlayerId() + " started moving in direction: " + direction);
-                players.get(message.getPlayerId()).setLinearVelocity(direction);
+                Player player = players.get(message.getPlayerId());
+
+                if (player == null) {
+                    System.out.println("Player not found: " + message.getPlayerId());
+                    return;
+                }
+
+                // Set the player's linear velocity based on the direction
+                player.setLinearVelocity(direction);
                 break;
             case MOVEMENT_STOPPED:
                 // Handle player movement stop
@@ -140,21 +150,21 @@ public class GameWorld {
 
     public void update(float deltaTime) {
         timer += deltaTime;
-        if (timer > 1) {
+        if (timer > 4) {
             timer = 0;
             JsonObject initialGameState = new JsonObject();
             Gson gson = new Gson();
             initialGameState.addProperty("type", MessageType.INITIAL_GAME_STATE.getType());
             initialGameState.add("players", gson.toJsonTree(getGameState().players()));
             initialGameState.add("bullets", gson.toJsonTree(getGameState().bullets()));
-            // System.out.println(initialGameState.toString());
+            System.out.println(initialGameState.toString());
 
             // Broadcast the game state to all clients
             // gameServerCoordinator.broadcastGameState(players, bullets);
 
         }
 
-        this.gameWorldGUI.gameLoop();
+        this.gameWorldGUI.gameLoop(deltaTime);
         // this.world.update(deltaTime);
         updateBullets(deltaTime);
     }

@@ -2,6 +2,7 @@
 package multiplayer.networking;
 
 import org.apache.log4j.Logger;
+import org.dyn4j.geometry.Vector2;
 import org.java_websocket.WebSocket;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,8 @@ public class NetworkManager {
 
     public void onPlayerJoinedGameWorld(OnPlayerJoinedGameWorldData data) {
         Player player = data.newPlayer();
+        // player.setLinearVelocity(new Vector2(0, 1));
+
         GameState gameState = data.gameState();
         PlayerJoinedMessage playerJoinedMessage = new PlayerJoinedMessage(player.getId(),
                 player.getTransform().getTranslation());
