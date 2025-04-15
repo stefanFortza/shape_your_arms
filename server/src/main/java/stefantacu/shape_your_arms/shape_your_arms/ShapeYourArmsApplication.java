@@ -13,11 +13,9 @@ import multiplayer.networking.GameServerCoordinator;
 public class ShapeYourArmsApplication {
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext context = SpringApplication.run(ShapeYourArmsApplication.class, args);
+		System.setProperty("java.awt.headless", "false");
 
-		// // Get the managed GameServer bean
-		// GameServerCoordinator gameServer =
-		// context.getBean(GameServerCoordinator.class);
+		ConfigurableApplicationContext context = SpringApplication.run(ShapeYourArmsApplication.class, args);
 
 		// Start game loop (in background) with the Spring-managed GameServer
 		GameLoop gameLoop = context.getBean(GameLoop.class);
@@ -25,8 +23,6 @@ public class ShapeYourArmsApplication {
 		// Start the game loop in the background thread
 		context.getBean(TaskExecutor.class).execute(gameLoop);
 
-		// Alternatively, run directly (blocking):
-		// gameLoop.run();
 	}
 
 	@Bean

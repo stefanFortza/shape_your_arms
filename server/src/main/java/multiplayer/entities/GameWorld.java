@@ -12,6 +12,8 @@ import com.google.gson.JsonObject;
 
 import multiplayer.entities.game_world_signal_data.OnPlayerJoinedGameWorldData;
 import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
+import multiplayer.gui.GameWorldGUI;
+import multiplayer.gui.framework.SimulationBody;
 import multiplayer.networking.GameMessageBroker;
 import multiplayer.networking.GameServerCoordinator;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
@@ -22,18 +24,24 @@ import multiplayer.utils.Signal;
  * Handles all game logic and state
  */
 public class GameWorld {
-    public Signal<OnPlayerJoinedGameWorldData> playerJoinedGameWorldSignal = new Signal<>();
-    public Signal<OnPlayerLeftGameWorldData> playerLeftGameWorldSignal = new Signal<>();
+    public Signal<OnPlayerJoinedGameWorldData> playerJoinedGameWorldSignal = new Signal<>(
+            "playerJoinedGameWorldSignal");
+    public Signal<OnPlayerLeftGameWorldData> playerLeftGameWorldSignal = new Signal<>("playerLeftGameWorldSignal");
 
-    private final World<Body> world = new World<>();
+    private final World<SimulationBody> world = new World<>();
     private final Map<String, Player> players = new ConcurrentHashMap<>();
     private final List<Bullet> bullets = new ArrayList<>();
     private final GameMessageBroker messageBroker;
     private final GameServerCoordinator gameServerCoordinator;
+    private final GameWorldGUI gameWorldGUI;
 
     public GameWorld(GameMessageBroker messageBroker, GameServerCoordinator gameServerCoordinator) {
         this.messageBroker = messageBroker;
         this.gameServerCoordinator = gameServerCoordinator;
+
+        gameWorldGUI = new GameWorldGUI(world);
+        gameWorldGUI.run();
+        System.out.println("GameWorld initialized");
     }
 
     public void initSignalHandlers() {
@@ -48,6 +56,7 @@ public class GameWorld {
         // Create a new player at a random position
         players.put(data.playerId(), newPlayer);
         this.world.addBody(newPlayer);
+        // newPlayer.setLinearVelocity(new Vector2(1, 0));
 
         playerJoinedGameWorldSignal.emit(new OnPlayerJoinedGameWorldData(newPlayer, getGameState()));
     }
@@ -105,7 +114,8 @@ public class GameWorld {
     }
 
     public void update(float deltaTime) {
-        this.world.update(deltaTime);
+        this.gameWorldGUI.gameLoop();
+        // this.world.update(deltaTime);
         updateBullets(deltaTime);
     }
 

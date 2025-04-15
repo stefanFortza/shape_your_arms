@@ -132,13 +132,14 @@ public abstract class SimulationFrame extends JFrame {
 	 * @param name  the frame name
 	 * @param scale the pixels per meter scale factor
 	 */
-	public SimulationFrame(String name) {
+	public SimulationFrame(String name, World<SimulationBody> world) {
 		super(name);
 
 		this.camera = new Camera();
 
 		// create the world
-		this.world = new World<SimulationBody>();
+		// this.world = new World<SimulationBody>();
+		this.world = world;
 
 		// setup the JFrame
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -308,34 +309,34 @@ public abstract class SimulationFrame extends JFrame {
 		this.canvas.createBufferStrategy(2);
 		// run a separate thread to do active rendering
 		// because we don't want to do it on the EDT
-		Thread thread = new Thread() {
-			public void run() {
-				// perform an infinite loop stopped
-				// render as fast as possible
-				while (!isStopped()) {
-					gameLoop();
-					// you could add a Thread.yield(); or
-					// Thread.sleep(long) here to give the
-					// CPU some breathing room
-					try {
-						Thread.sleep(5);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		};
-		// set the game loop thread to a daemon thread so that
-		// it cannot stop the JVM from exiting
-		thread.setDaemon(true);
-		// start the game loop
-		thread.start();
+		// Thread thread = new Thread() {
+		// public void run() {
+		// // perform an infinite loop stopped
+		// // render as fast as possible
+		// while (!isStopped()) {
+		// gameLoop();
+		// // you could add a Thread.yield(); or
+		// // Thread.sleep(long) here to give the
+		// // CPU some breathing room
+		// try {
+		// Thread.sleep(5);
+		// } catch (InterruptedException e) {
+		// }
+		// }
+		// }
+		// };
+		// // set the game loop thread to a daemon thread so that
+		// // it cannot stop the JVM from exiting
+		// thread.setDaemon(true);
+		// // start the game loop
+		// thread.start();
 	}
 
 	/**
 	 * The method calling the necessary methods to update
 	 * the game, graphics, and poll for input.
 	 */
-	private void gameLoop() {
+	public void gameLoop() {
 		// get the graphics object to render to
 		Graphics2D g = (Graphics2D) this.canvas.getBufferStrategy().getDrawGraphics();
 

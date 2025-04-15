@@ -1,5 +1,7 @@
 package multiplayer.entities;
 
+import org.dyn4j.geometry.Geometry;
+import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
 
 public class Player extends GameObject {
@@ -11,6 +13,11 @@ public class Player extends GameObject {
         super(position);
         this.id = id;
 
+        this.radius = 0.5; // Set the radius of the player
+
+        // this.addFixture(Geometry.createRectangle(1.0, 1.5));
+        // this.addFixture(Geometry.createCircle(0.35));
+        // this.setMass(MassType.NORMAL);
     }
 
     public void takeDamage(int damage) {

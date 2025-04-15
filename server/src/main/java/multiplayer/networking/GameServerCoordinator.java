@@ -3,6 +3,8 @@ package multiplayer.networking;
 import org.java_websocket.WebSocket;
 
 import multiplayer.entities.GameWorld;
+import multiplayer.gui.GameWorldGUI;
+import multiplayer.gui.Tank;
 import multiplayer.networking.messages.GameMessage;
 import multiplayer.networking.messages.MessageFactory;
 import multiplayer.networking.messages.MoveMessageFromClient;
@@ -21,9 +23,9 @@ public class GameServerCoordinator {
     private final GameMessageBroker networkManager;
 
     // Signals
-    public Signal<OnClientConnectedData> clientConnectedSignal = new Signal<>();
-    public Signal<OnClientDisconnectedData> clientDisconnectedSignal = new Signal<>();
-    public Signal<MoveMessageFromClient> moveMessageReceivedSignal = new Signal<>();
+    public Signal<OnClientConnectedData> clientConnectedSignal = new Signal<>("clientConnectedSignal");
+    public Signal<OnClientDisconnectedData> clientDisconnectedSignal = new Signal<>("clientDisconnectedSignal");
+    public Signal<MoveMessageFromClient> moveMessageReceivedSignal = new Signal<>("moveMessageReceivedSignal");
 
     public GameServerCoordinator() {
 

@@ -1,9 +1,10 @@
 package multiplayer.entities;
 
-import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Vector2;
 
-public abstract class GameObject extends Body {
+import multiplayer.gui.framework.SimulationBody;
+
+public abstract class GameObject extends SimulationBody {
 
     public GameObject(Vector2 position) {
         this.transform.setTranslation(position);
