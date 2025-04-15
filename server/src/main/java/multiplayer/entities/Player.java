@@ -1,16 +1,16 @@
 package multiplayer.entities;
 
+import org.dyn4j.geometry.Vector2;
+
 public class Player extends GameObject {
     private String id;
     private int health = 100;
     private int score = 0;
 
-    // Size for collision detection
-    private double radius = 20;
-
     public Player(Vector2 position, String id) {
         super(position);
         this.id = id;
+
     }
 
     public void takeDamage(int damage) {
@@ -21,7 +21,7 @@ public class Player extends GameObject {
 
     public void respawn() {
         this.health = 100;
-        this.position = Vector2.getRandomVectorInRange(0, 800, 0, 600);
+        this.transform.setTranslation(new Vector2().zero());
     }
 
     public void incrementScore() {
@@ -65,11 +65,4 @@ public class Player extends GameObject {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
-
-    @Override
-    public boolean collidesWith(GameObject other) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'collidesWith'");
-    }
-
 }

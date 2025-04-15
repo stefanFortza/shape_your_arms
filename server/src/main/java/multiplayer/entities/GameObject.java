@@ -1,30 +1,13 @@
 package multiplayer.entities;
 
-public abstract class GameObject {
-    protected Vector2 position;
-    protected double rotation;
+import org.dyn4j.dynamics.Body;
+import org.dyn4j.geometry.Vector2;
+
+public abstract class GameObject extends Body {
 
     public GameObject(Vector2 position) {
-        this.position = position;
-    }
-
-    public Vector2 getPosition() {
-        return position;
-    }
-
-    public void setPosition(Vector2 position) {
-        this.position = position;
-    }
-
-    public double getRotation() {
-        return rotation;
-    }
-
-    public void setRotation(double rotation) {
-        this.rotation = rotation;
+        this.transform.setTranslation(position);
     }
 
     public abstract void update(float deltaTime);
-
-    public abstract boolean collidesWith(GameObject other);
 }

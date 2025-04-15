@@ -55,7 +55,8 @@ public class GameMessageBroker {
     public void onPlayerJoinedGameWorld(OnPlayerJoinedGameWorldData data) {
         Player player = data.newPlayer();
         GameState gameState = data.gameState();
-        PlayerJoinedMessage playerJoinedMessage = new PlayerJoinedMessage(player.getId(), player.getPosition());
+        PlayerJoinedMessage playerJoinedMessage = new PlayerJoinedMessage(player.getId(),
+                player.getTransform().getTranslation());
         String joinMsg = MessageFactory.serializeMessage(playerJoinedMessage);
         // Notify all clients about the new player
         // JsonObject joinMsg = new JsonObject();

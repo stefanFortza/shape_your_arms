@@ -2,9 +2,6 @@ package multiplayer.networking;
 
 import org.java_websocket.WebSocket;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import multiplayer.entities.GameWorld;
 import multiplayer.networking.messages.GameMessage;
 import multiplayer.networking.messages.MessageFactory;
@@ -52,7 +49,6 @@ public class GameServerCoordinator {
     }
 
     public void update(float deltaTime) {
-        // Update game world (bullets, collisions, etc)
         gameWorld.update(deltaTime);
     }
 
@@ -63,10 +59,6 @@ public class GameServerCoordinator {
 
     public void onClientDisconnected(OnClientDisconnectedData data) {
         clientDisconnectedSignal.emit(data);
-        // // Remove player from game world and network manager
-        // gameWorld.onClientDisconnected(playerId);
-        // networkManager.onClientDisconnected(playerId);
-
         System.out.println("Player disconnected: " + data.playerId());
     }
 

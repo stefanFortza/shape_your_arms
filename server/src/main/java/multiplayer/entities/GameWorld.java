@@ -4,7 +4,9 @@ package multiplayer.entities;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.java_websocket.WebSocket;
+import org.dyn4j.dynamics.Body;
+import org.dyn4j.geometry.Vector2;
+import org.dyn4j.world.World;
 
 import com.google.gson.JsonObject;
 
@@ -23,6 +25,7 @@ public class GameWorld {
     public Signal<OnPlayerJoinedGameWorldData> playerJoinedGameWorldSignal = new Signal<>();
     public Signal<OnPlayerLeftGameWorldData> playerLeftGameWorldSignal = new Signal<>();
 
+    private final World<Body> world = new World<>();
     private final Map<String, Player> players = new ConcurrentHashMap<>();
     private final List<Bullet> bullets = new ArrayList<>();
     private final GameMessageBroker messageBroker;
@@ -41,9 +44,10 @@ public class GameWorld {
 
     public void onClientConnected(OnClientConnectedData data) {
 
-        Player newPlayer = new Player(Vector2.getRandomVector01().multiply(800), data.playerId());
+        Player newPlayer = new Player(new Vector2().zero(), data.playerId());
         // Create a new player at a random position
         players.put(data.playerId(), newPlayer);
+        this.world.addBody(newPlayer);
 
         playerJoinedGameWorldSignal.emit(new OnPlayerJoinedGameWorldData(newPlayer, getGameState()));
     }
@@ -63,17 +67,18 @@ public class GameWorld {
 
     public void handlePlayerMove(String playerId, JsonObject message) {
         // TODO: Handle player movement
-        Player player = players.get(playerId);
-        if (player != null) {
-            double x = message.get("x").getAsDouble();
-            double y = message.get("y").getAsDouble();
+        // Player player = players.get(playerId);
+        // if (player != null) {
+        // double x = message.get("x").getAsDouble();
+        // double y = message.get("y").getAsDouble();
 
-            double rotation = message.has("rotation") ? message.get("rotation").getAsDouble() : player.getRotation();
+        // double rotation = message.has("rotation") ?
+        // message.get("rotation").getAsDouble() : player.getRotation();
 
-            player.setPosition(new Vector2(x, y));
-            player.setRotation(rotation);
+        // player.setPosition(new Vector2(x, y));
+        // player.setRotation(rotation);
 
-        }
+        // }
     }
 
     public void handlePlayerShoot(String playerId, JsonObject message) {
@@ -100,8 +105,8 @@ public class GameWorld {
     }
 
     public void update(float deltaTime) {
+        this.world.update(deltaTime);
         updateBullets(deltaTime);
-        checkCollisions();
     }
 
     private void updateBullets(float deltaTime) {
@@ -117,42 +122,4 @@ public class GameWorld {
         }
     }
 
-    public void checkCollisions() {
-        // Bullet-player collision detection
-        Iterator<Bullet> bulletIterator = bullets.iterator();
-        while (bulletIterator.hasNext()) {
-            Bullet bullet = bulletIterator.next();
-
-            for (Map.Entry<String, Player> entry : players.entrySet()) {
-                String playerId = entry.getKey();
-                Player player = entry.getValue();
-
-                // Skip if the bullet belongs to this player
-                if (bullet.getOwnerId().equals(playerId)) {
-                    continue;
-                }
-
-                // Check collision
-                if (bullet.collidesWith(player)) {
-                    // Player takes damage
-                    player.takeDamage(bullet.getDamage());
-
-                    // Remove the bullet
-                    bulletIterator.remove();
-
-                    // Check if player died and handle respawn
-                    if (player.getHealth() <= 0) {
-                        player.respawn();
-                    }
-
-                    handleBulletCollision(bullet, player);
-
-                    break;
-                }
-            }
-        }
-    }
-
-    private void handleBulletCollision(Bullet bullet, Player player) {
-    }
 }
