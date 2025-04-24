@@ -2,14 +2,14 @@ package multiplayer.networking.messages;
 
 import org.dyn4j.geometry.Vector2;
 
-public class PlayerJoinedMessage extends GameMessage {
-    private String id;
-    private Vector2 position;
+import multiplayer.entities.entities_data.PlayerData;
 
-    public PlayerJoinedMessage(String id, Vector2 position) {
+public class PlayerJoinedMessage extends GameMessage {
+    private PlayerData playerData;
+
+    public PlayerJoinedMessage(PlayerData playerData) {
         super(MessageType.PLAYER_JOINED);
-        this.id = id;
-        this.position = position;
+        this.playerData = playerData;
     }
 
 }

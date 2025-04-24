@@ -17,6 +17,7 @@ import multiplayer.entities.GameWorld;
 import multiplayer.entities.Player;
 import multiplayer.entities.game_world_signal_data.OnPlayerJoinedGameWorldData;
 import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
+import multiplayer.networking.messages.InitialGameStateMessage;
 import multiplayer.networking.messages.MessageFactory;
 import multiplayer.networking.messages.MessageType;
 import multiplayer.networking.messages.PlayerJoinedMessage;
@@ -61,16 +62,8 @@ public class NetworkManager {
         // player.setLinearVelocity(new Vector2(0, 1));
 
         GameState gameState = data.gameState();
-        PlayerJoinedMessage playerJoinedMessage = new PlayerJoinedMessage(player.getId(),
-                player.getTransform().getTranslation());
-
+        PlayerJoinedMessage playerJoinedMessage = new PlayerJoinedMessage(player.getPlayerData());
         String joinMsg = MessageFactory.serializeMessage(playerJoinedMessage);
-        // Notify all clients about the new player
-        // JsonObject joinMsg = new JsonObject();
-        // joinMsg.addProperty("type", MessageType.PLAYER_JOINED.getType());
-        // joinMsg.addProperty("id", player.getId());
-        // joinMsg.addProperty("x", player.getX());
-        // joinMsg.addProperty("y", player.getY());
 
         System.out.println("Player joined: " + player.getId());
         System.out.println("Player message: " + joinMsg);
@@ -109,15 +102,18 @@ public class NetworkManager {
 
     public void sendInitialGameState(WebSocket conn, GameState gameState) {
 
-        JsonObject initialGameState = new JsonObject();
-        initialGameState.addProperty("type", MessageType.INITIAL_GAME_STATE.getType());
-        initialGameState.add("players", gson.toJsonTree(gameState.players()));
-        initialGameState.add("bullets", gson.toJsonTree(gameState.bullets()));
+        InitialGameStateMessage initialGameStateMessage = new InitialGameStateMessage(gameState);
+        String initialGameState = MessageFactory.serializeMessage(initialGameStateMessage);
+        // JsonObject initialGameState = new JsonObject();
+        // initialGameState.addProperty("type",
+        // MessageType.INITIAL_GAME_STATE.getType());
+        // initialGameState.add("players", gson.toJsonTree(gameState.getPlayers()));
+        // initialGameState.add("bullets", gson.toJsonTree(gameState.()));
         // logger.info("Sending initial game state to " +
         // conn.getRemoteSocketAddress());
         // System.out.println(initialGameState.toString());
 
-        conn.send(initialGameState.toString());
+        conn.send(initialGameState);
     }
 
     public void sendPlayerHit(String playerId, int damage, int currentHealth) {

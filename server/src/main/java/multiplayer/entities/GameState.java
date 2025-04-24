@@ -5,8 +5,20 @@ import java.util.Map;
 
 import multiplayer.entities.entities_data.PlayerData;
 
-public record GameState(
-                Map<String, PlayerData> players,
-                List<Bullet> bullets) {
+public class GameState {
+    private Map<String, Player> players;
+    private List<Bullet> bullets;
 
+    public GameState(Map<String, Player> players, List<Bullet> bullets) {
+        this.players = players;
+        this.bullets = bullets;
+    }
+
+    public Map<String, Player> getPlayers() {
+        return players;
+    }
+
+    public List<Bullet> getBullets() {
+        return bullets;
+    }
 }

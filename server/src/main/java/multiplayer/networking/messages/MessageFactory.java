@@ -38,6 +38,9 @@ public class MessageFactory {
 
             case PLAYER_SHOOT:
                 return gson.fromJson(json, ShootMessage.class);
+
+            case INITIAL_GAME_STATE:
+                return gson.fromJson(json, InitialGameStateMessage.class);
             default:
                 throw new IllegalArgumentException("Unknown message type: " + type);
         }

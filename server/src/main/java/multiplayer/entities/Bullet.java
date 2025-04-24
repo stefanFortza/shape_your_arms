@@ -2,6 +2,8 @@ package multiplayer.entities;
 
 import org.dyn4j.geometry.Vector2;
 
+import multiplayer.entities.entities_data.BulletData;
+
 public class Bullet extends GameObject {
     private String ownerId;
     // private double speed = 500; // pixels per second
@@ -11,6 +13,11 @@ public class Bullet extends GameObject {
     public Bullet(Vector2 position, String ownerId, Vector2 direction) {
         super(position);
         this.ownerId = ownerId;
+    }
+
+    public BulletData getBulletData() {
+        BulletData bulletData = new BulletData(this);
+        return bulletData;
     }
 
     public void update(float deltaTime) {
@@ -43,6 +50,22 @@ public class Bullet extends GameObject {
 
     public int getDamage() {
         return damage;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
+    public double getLifetime() {
+        return lifetime;
+    }
+
+    public void setLifetime(double lifetime) {
+        this.lifetime = lifetime;
     }
 
 }

@@ -16,6 +16,8 @@ import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
 import multiplayer.gui.GameWorldGUI;
 import multiplayer.gui.framework.SimulationBody;
 import multiplayer.networking.NetworkManager;
+import multiplayer.networking.messages.InitialGameStateMessage;
+import multiplayer.networking.messages.MessageFactory;
 import multiplayer.networking.messages.MessageType;
 import multiplayer.networking.messages.move_messages.MoveMessageFromClient;
 import multiplayer.networking.GameServerCoordinator;
@@ -74,18 +76,7 @@ public class GameWorld {
     }
 
     public GameState getGameState() {
-
-        Map<String, PlayerData> playersCopy = new HashMap<>();
-
-        for (Map.Entry<String, Player> entry : players.entrySet()) {
-            Player player = entry.getValue();
-            playersCopy.put(entry.getKey(), player.getPlayerData());
-        }
-
-        // Return a copy of the game state
-        // Map<String, Player> playersCopy = new HashMap<>(players);
-        List<Bullet> bulletsCopy = new ArrayList<>(bullets);
-        return new GameState(playersCopy, bulletsCopy);
+        return new GameState(players, bullets);
     }
 
     public void onMoveMessageReceived(MoveMessageFromClient message) {
@@ -152,12 +143,10 @@ public class GameWorld {
         timer += deltaTime;
         if (timer > 4) {
             timer = 0;
-            JsonObject initialGameState = new JsonObject();
-            Gson gson = new Gson();
-            initialGameState.addProperty("type", MessageType.INITIAL_GAME_STATE.getType());
-            initialGameState.add("players", gson.toJsonTree(getGameState().players()));
-            initialGameState.add("bullets", gson.toJsonTree(getGameState().bullets()));
-            System.out.println(initialGameState.toString());
+
+            InitialGameStateMessage initialGameStateMessage = new InitialGameStateMessage(getGameState());
+            String initialGameState = MessageFactory.serializeMessage(initialGameStateMessage);
+            System.out.println(initialGameState);
 
             // Broadcast the game state to all clients
             // gameServerCoordinator.broadcastGameState(players, bullets);
