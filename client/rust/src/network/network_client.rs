@@ -13,14 +13,12 @@ pub struct NetworkClient {
     websocket_url: GString,
 
     socket: Gd<WebSocketPeer>,
-    player_id: i32,
 }
 
 #[godot_api]
 impl INode for NetworkClient {
     fn init(base: Base<Node>) -> Self {
         Self {
-            player_id: -1,
             websocket_url: GString::new(),
             socket: WebSocketPeer::new_gd(),
             base,

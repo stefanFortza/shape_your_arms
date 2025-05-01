@@ -6,17 +6,21 @@ import java.util.stream.Collectors;
 
 import multiplayer.entities.Bullet;
 import multiplayer.entities.GameState;
+import multiplayer.entities.entities_data.BulletData;
 import multiplayer.entities.entities_data.PlayerData;
 
 public class InitialGameStateMessage extends GameMessage {
     private Map<String, PlayerData> players;
-    private List<Bullet> bullets;
+    private List<BulletData> bullets;
 
     public InitialGameStateMessage(GameState gameState) {
         super(MessageType.INITIAL_GAME_STATE);
 
         this.players = gameState.getPlayers().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getPlayerData()));
+        this.bullets = gameState.getBullets().stream()
+                .map(Bullet::getBulletData)
+                .collect(Collectors.toList());
 
     }
 
@@ -28,11 +32,12 @@ public class InitialGameStateMessage extends GameMessage {
         this.players = players;
     }
 
-    public List<Bullet> getBullets() {
+    public List<BulletData> getBullets() {
         return bullets;
     }
 
-    public void setBullets(List<Bullet> bullets) {
+    public void setBullets(List<BulletData> bullets) {
         this.bullets = bullets;
     }
+
 }

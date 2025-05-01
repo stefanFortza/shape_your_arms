@@ -27,11 +27,9 @@ pub enum MessageType {
     //     player_id: u32,
     //     reason: String,
     // },
-    // Welcome {
-    //     id: String,
-    //     x: f32,
-    //     y: f32,
-    // },
+    Welcome {
+        id: String,
+    },
     // PlayerLeft {
     //     player_id: u32,
     // },
@@ -58,28 +56,33 @@ pub enum MessageType {
     },
 }
 
-// impl MessageType {
-//     pub fn from_json(json: &str) -> Result<Self, serde_json::Error> {
-//         serde_json::from_str(json)
-//     }
+impl MessageType {
+    pub fn from_json(json: &str) -> Result<Self, serde_json::Error> {
+        serde_json::from_str(json)
+    }
 
-//     // pub fn describe(&self) -> String {
-//     //     match self {
-//     //         ServerDataEnum::GameState { data } => format!(
-//     //             "GameState with {} players and {} bullets",
-//     //             data.players.len(),
-//     //             data.bullets.len()
-//     //         ),
-//     //         ServerDataEnum::Hit { damage } => format!("Hit with damage: {}", damage),
-//     //         ServerDataEnum::PlayerDeath { player_id, reason } => {
-//     //             format!("Player {} died due to {}", player_id, reason)
-//     //         }
-//     //         ServerDataEnum::Welcome { id, x, y } => {
-//     //             format!("Welcome {} at position ({}, {})", id, x, y)
-//     //         }
-//     //         ServerDataEnum::PlayerLeft { player_id } => {
-//     //             format!("Player {} left the game", player_id)
-//     //         }
-//     //     }
-//     // }
-// }
+    pub fn to_json(message: &MessageType) -> Result<String, serde_json::Error> {
+        serde_json::to_string(message)
+    }
+
+    // pub fn describe(&self) -> String {
+    //     match self {
+
+    //         // ServerDataEnum::GameState { data } => format!(
+    //         //     "GameState with {} players and {} bullets",
+    //         //     data.players.len(),
+    //         //     data.bullets.len()
+    //         // ),
+    //         // ServerDataEnum::Hit { damage } => format!("Hit with damage: {}", damage),
+    //         // ServerDataEnum::PlayerDeath { player_id, reason } => {
+    //         //     format!("Player {} died due to {}", player_id, reason)
+    //         // }
+    //         // ServerDataEnum::Welcome { id, x, y } => {
+    //         //     format!("Welcome {} at position ({}, {})", id, x, y)
+    //         // }
+    //         // ServerDataEnum::PlayerLeft { player_id } => {
+    //         //     format!("Player {} left the game", player_id)
+    //         // }
+    //     }
+    // }
+}

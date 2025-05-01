@@ -1,14 +1,17 @@
 use godot::classes::class_macros::registry::signal;
 use godot::classes::{INode, Node};
+use godot::meta::GodotType;
 use godot::prelude::*;
 
-use crate::player::Player;
+use crate::entities::player::Player;
 
 use super::messages::message_type::MessageType;
 
 #[derive(GodotClass)]
 #[class(base=Node)]
-struct NetwornkManager {
+pub struct NetwornkManager {
+    player_id: Option<GString>,
+
     #[base]
     base: Base<Node>,
 }
@@ -16,7 +19,10 @@ struct NetwornkManager {
 #[godot_api]
 impl INode for NetwornkManager {
     fn init(base: Base<Node>) -> Self {
-        Self { base }
+        Self {
+            player_id: None,
+            base,
+        }
     }
 
     fn ready(&mut self) {
@@ -36,34 +42,10 @@ impl INode for NetwornkManager {
     }
 }
 
-struct Test {
-    x: f32,
-    y: f32,
-}
-
-impl ToGodot for Test {
-    fn to_godot(&self) -> Self::ToVia<'_> {
-        todo!()
-    }
-
-    fn to_variant(&self) -> Variant {
-        self.to_godot().to_ffi().ffi_to_variant()
-    }
-
-    type ToVia<'v>
-    where
-        Self: 'v;
-}
-
 #[godot_api]
-impl NetwornkManager {
+pub impl NetwornkManager {
     #[signal]
     pub fn message_serialized(message: GString);
-
-    #[func]
-    fn test_func(&self, test: Test) {
-        godot_print!("Test function called with: {:?}", test);
-    }
 
     #[func]
     fn on_message_received(&self, message: GString) {
@@ -84,6 +66,7 @@ impl NetwornkManager {
     fn on_player_moved(&mut self, direction: Vector2) {
         // Handle player movement
         godot_print!("Player moved: {:?}", direction);
+        // let player_moved_message:MessageType = MessageType::PlayerMoveFromClient { player_id: (), direction: () }
     }
 
     #[func]

@@ -104,14 +104,6 @@ public class NetworkManager {
 
         InitialGameStateMessage initialGameStateMessage = new InitialGameStateMessage(gameState);
         String initialGameState = MessageFactory.serializeMessage(initialGameStateMessage);
-        // JsonObject initialGameState = new JsonObject();
-        // initialGameState.addProperty("type",
-        // MessageType.INITIAL_GAME_STATE.getType());
-        // initialGameState.add("players", gson.toJsonTree(gameState.getPlayers()));
-        // initialGameState.add("bullets", gson.toJsonTree(gameState.()));
-        // logger.info("Sending initial game state to " +
-        // conn.getRemoteSocketAddress());
-        // System.out.println(initialGameState.toString());
 
         conn.send(initialGameState);
     }
