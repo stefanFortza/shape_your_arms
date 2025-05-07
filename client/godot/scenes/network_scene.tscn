@@ -5,6 +5,6 @@
 [node name="NetworkClient" type="NetworkClient" parent="."]
 websocket_url = "ws://localhost:8887"
 
-[node name="NetwornkManager" type="NetwornkManager" parent="."]
+[node name="NetworkManager" type="NetwornkManager" parent="."]
 
-[connection signal="on_message_received" from="NetworkClient" to="NetwornkManager" method="on_message_received"]
+[connection signal="on_message_received" from="NetworkClient" to="NetworkManager" method="on_message_received"]
