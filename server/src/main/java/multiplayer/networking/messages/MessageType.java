@@ -2,18 +2,18 @@ package multiplayer.networking.messages;
 
 public enum MessageType {
     // Incoming messages
-    PLAYER_SHOOT("PlayerShoot"),
-    PLAYER_MOVE_FROM_CLIENT("PlayerMoveFromClient"),
+    PLAYER_SHOOT("playerShoot"),
+    PLAYER_MOVE_FROM_CLIENT("playerMoveFromClient"),
 
     // Outgoing messages
-    GAME_STATE("GameState"),
-    HIT("Hit"),
-    PLAYER_DEATH("PlayerDeath"),
-    WELCOME("Welcome"),
-    PLAYER_LEFT("PlayerLeft"),
-    PLAYER_JOINED("PlayerJoined"),
-    INITIAL_GAME_STATE("InitialGameState"),
-    PLAYER_MOVE_FROM_SERVER("PlayerMoveFromServer");
+    GAME_STATE("gameState"),
+    HIT("hit"),
+    PLAYER_DEATH("playerDeath"),
+    WELCOME("welcome"),
+    PLAYER_LEFT("playerLeft"),
+    PLAYER_JOINED("playerJoined"),
+    INITIAL_GAME_STATE("initialGameState"),
+    PLAYER_MOVE_FROM_SERVER("playerMoveFromServer");
 
     private final String type;
 

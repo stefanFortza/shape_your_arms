@@ -144,9 +144,11 @@ public class GameWorld {
         if (timer > 4) {
             timer = 0;
 
-            InitialGameStateMessage initialGameStateMessage = new InitialGameStateMessage(getGameState());
-            String initialGameState = MessageFactory.serializeMessage(initialGameStateMessage);
-            System.out.println(initialGameState);
+            // InitialGameStateMessage initialGameStateMessage = new
+            // InitialGameStateMessage(getGameState());
+            // String initialGameState =
+            // MessageFactory.serializeMessage(initialGameStateMessage);
+            // System.out.println(initialGameState);
 
             // Broadcast the game state to all clients
             // gameServerCoordinator.broadcastGameState(players, bullets);

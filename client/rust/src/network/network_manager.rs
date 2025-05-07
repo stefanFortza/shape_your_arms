@@ -1,9 +1,13 @@
+use std::str::FromStr;
+
 use godot::classes::class_macros::registry::signal;
+use godot::classes::class_macros::sys::known_virtual_hashes::VideoStreamPlayback::play;
 use godot::classes::{INode, Node};
 use godot::meta::GodotType;
 use godot::prelude::*;
 
 use crate::entities::player::Player;
+use crate::utils::serializable_vector2::SerializableVector2;
 
 use super::messages::message_type::MessageType;
 
@@ -47,10 +51,32 @@ pub impl NetwornkManager {
     #[signal]
     pub fn message_serialized(message: GString);
 
+    #[signal]
+    fn welcome_message_received(player_id: GString);
+
     #[func]
-    fn on_message_received(&self, message: GString) {
+    fn on_message_received(&mut self, message: GString) {
+        let message = MessageType::from_json(message.to_string().as_str());
+        if let Ok(message) = message {
+            godot_print!("Message received: {:?}", message);
+
+            match message {
+                MessageType::Welcome { player_id } => {
+                    godot_print!("Welcome message received with player ID: {}", player_id);
+                    let player_id = player_id.to_godot();
+                    self.player_id = Some(player_id.clone());
+                    self.signals().welcome_message_received().emit(player_id);
+                }
+                // Handle other message types here
+                _ => {
+                    godot_print!("Other message type received");
+                }
+            }
+        } else {
+            godot_error!("Failed to deserialize message");
+        }
         // Handle incoming messages
-        godot_print!("Message received: {}", message);
+        // godot_print!("Message received: {}", message);
     }
 
     // #[func]
@@ -65,7 +91,17 @@ pub impl NetwornkManager {
 
     fn on_player_moved(&mut self, direction: Vector2) {
         // Handle player movement
-        godot_print!("Player moved: {:?}", direction);
+
+        let message = MessageType::PlayerMoveFromClient {
+            player_id: self.player_id.clone().unwrap_or_default().to_string(),
+            direction: SerializableVector2::new_from_vector2(&direction),
+        };
+
+        if let Ok(json) = serde_json::to_string(&message) {
+            godot_print!("Player moved: {}", json);
+        } else {
+            godot_print!("Failed to serialize player movement");
+        }
         // let player_moved_message:MessageType = MessageType::PlayerMoveFromClient { player_id: (), direction: () }
     }
 

@@ -14,6 +14,7 @@ use super::{bullet_parser::Bullet, player_parser::Player};
 // }
 
 #[derive(Deserialize, Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 #[serde(tag = "type")] // Use the "type" field in JSON to determine the variant.
 pub enum MessageType {
     // GameState {
@@ -27,9 +28,8 @@ pub enum MessageType {
     //     player_id: u32,
     //     reason: String,
     // },
-    Welcome {
-        id: String,
-    },
+    #[serde(rename_all = "camelCase")]
+    Welcome { player_id: String },
     // PlayerLeft {
     //     player_id: u32,
     // },
@@ -64,25 +64,4 @@ impl MessageType {
     pub fn to_json(message: &MessageType) -> Result<String, serde_json::Error> {
         serde_json::to_string(message)
     }
-
-    // pub fn describe(&self) -> String {
-    //     match self {
-
-    //         // ServerDataEnum::GameState { data } => format!(
-    //         //     "GameState with {} players and {} bullets",
-    //         //     data.players.len(),
-    //         //     data.bullets.len()
-    //         // ),
-    //         // ServerDataEnum::Hit { damage } => format!("Hit with damage: {}", damage),
-    //         // ServerDataEnum::PlayerDeath { player_id, reason } => {
-    //         //     format!("Player {} died due to {}", player_id, reason)
-    //         // }
-    //         // ServerDataEnum::Welcome { id, x, y } => {
-    //         //     format!("Welcome {} at position ({}, {})", id, x, y)
-    //         // }
-    //         // ServerDataEnum::PlayerLeft { player_id } => {
-    //         //     format!("Player {} left the game", player_id)
-    //         // }
-    //     }
-    // }
 }

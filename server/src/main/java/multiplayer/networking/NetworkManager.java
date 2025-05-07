@@ -21,6 +21,7 @@ import multiplayer.networking.messages.InitialGameStateMessage;
 import multiplayer.networking.messages.MessageFactory;
 import multiplayer.networking.messages.MessageType;
 import multiplayer.networking.messages.PlayerJoinedMessage;
+import multiplayer.networking.messages.WelcomeMessage;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
 import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
 
@@ -91,15 +92,6 @@ public class NetworkManager {
         broadcast(leaveMsg.toString(), player.getId());
     }
 
-    public void broadcastGameState(Map<String, Player> players, List<Bullet> bullets) {
-        JsonObject gameState = new JsonObject();
-        gameState.addProperty("type", MessageType.GAME_STATE.getType());
-        gameState.add("players", gson.toJsonTree(players));
-        gameState.add("bullets", gson.toJsonTree(bullets));
-
-        broadcast(gameState.toString());
-    }
-
     public void sendInitialGameState(WebSocket conn, GameState gameState) {
 
         InitialGameStateMessage initialGameStateMessage = new InitialGameStateMessage(gameState);
@@ -108,43 +100,13 @@ public class NetworkManager {
         conn.send(initialGameState);
     }
 
-    public void sendPlayerHit(String playerId, int damage, int currentHealth) {
-        WebSocket conn = connections.get(playerId);
-        if (conn != null && conn.isOpen()) {
-            JsonObject hitMsg = new JsonObject();
-            hitMsg.addProperty("type", MessageType.HIT.getType());
-            hitMsg.addProperty("damage", damage);
-            hitMsg.addProperty("health", currentHealth);
-
-            conn.send(hitMsg.toString());
-        }
-    }
-
-    public void broadcastPlayerDeath(String playerId) {
-        JsonObject deathMsg = new JsonObject();
-        deathMsg.addProperty("type", MessageType.PLAYER_DEATH.getType());
-        deathMsg.addProperty("playerId", playerId);
-
-        broadcast(deathMsg.toString());
-    }
-
     public void sendWelcomeMessage(WebSocket conn, String playerId, Player player) {
-        // JsonObject welcomeMsg = new JsonObject();
-        // welcomeMsg.addProperty("type", MessageType.WELCOME.getType());
-        // welcomeMsg.addProperty("id", playerId);
-        // welcomeMsg.addProperty("x", player.getX());
-        // welcomeMsg.addProperty("y", player.getY());
+        WelcomeMessage welcomeMessage = new WelcomeMessage(playerId);
+        String welcomeMsg = MessageFactory.serializeMessage(welcomeMessage);
 
-        // conn.send(welcomeMsg.toString());
-        // System.out.println("Sent welcome message to " + playerId);
-    }
-
-    public void broadcastPlayerLeft(String playerId) {
-        JsonObject disconnectMsg = new JsonObject();
-        disconnectMsg.addProperty("type", MessageType.PLAYER_LEFT.getType());
-        disconnectMsg.addProperty("id", playerId);
-
-        broadcast(disconnectMsg.toString());
+        if (conn != null && conn.isOpen()) {
+            conn.send(welcomeMsg);
+        }
     }
 
     public void broadcast(String message, String excludePlayerId) {
