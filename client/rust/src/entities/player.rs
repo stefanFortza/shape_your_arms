@@ -29,10 +29,10 @@ impl Player {
             direction.x -= 1.0;
         }
         if Input::singleton().is_action_pressed("move_up") {
-            direction.y -= 1.0;
+            direction.y += 1.0;
         }
         if Input::singleton().is_action_pressed("move_down") {
-            direction.y += 1.0;
+            direction.y -= 1.0;
         }
 
         if direction.length() > 0.0 {

@@ -1,8 +1,8 @@
 package multiplayer.networking.messages.move_messages;
 
 public enum MoveMessageType {
-    MOVEMENT_STARTED("MovementStarted"),
-    MOVEMENT_STOPPED("MovementStopped");
+    MOVEMENT_STARTED("movementStarted"),
+    MOVEMENT_STOPPED("movementStopped");
 
     private final String stringValue; // Store the string value
 

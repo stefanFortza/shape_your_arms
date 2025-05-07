@@ -89,16 +89,21 @@ pub impl NetwornkManager {
     //     // self.socket.send_text(&json_message);
     // }
 
+    #[func]
     fn on_player_moved(&mut self, direction: Vector2) {
         // Handle player movement
 
         let message = MessageType::PlayerMoveFromClient {
             player_id: self.player_id.clone().unwrap_or_default().to_string(),
             direction: SerializableVector2::new_from_vector2(&direction),
+            move_message_type: "movementStarted".to_string(),
         };
 
         if let Ok(json) = serde_json::to_string(&message) {
             godot_print!("Player moved: {}", json);
+
+            // Emit the signal with the serialized message
+            self.signals().message_serialized().emit(json.to_godot());
         } else {
             godot_print!("Failed to serialize player movement");
         }

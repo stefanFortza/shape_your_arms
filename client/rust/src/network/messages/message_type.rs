@@ -50,9 +50,11 @@ pub enum MessageType {
     //     player_id: u32,
     //     direction: (f32, f32),
     // },
+    #[serde(rename_all = "camelCase")]
     PlayerMoveFromClient {
         player_id: String,
         direction: SerializableVector2,
+        move_message_type: String,
     },
 }
 

@@ -1,7 +1,9 @@
 use godot::classes::web_socket_peer::State;
-use godot::classes::{IWebSocketPeer, Node, Timer, WebSocketPeer};
+use godot::classes::{Node, WebSocketPeer};
 use godot::global::Error;
 use godot::prelude::*;
+
+use super::network_manager::NetwornkManager;
 
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -13,6 +15,7 @@ pub struct NetworkClient {
     websocket_url: GString,
 
     socket: Gd<WebSocketPeer>,
+    network_manager: OnReady<Gd<NetwornkManager>>,
 }
 
 #[godot_api]
@@ -21,11 +24,19 @@ impl INode for NetworkClient {
         Self {
             websocket_url: GString::new(),
             socket: WebSocketPeer::new_gd(),
+            network_manager: OnReady::from_node("../NetworkManager"),
             base,
         }
     }
 
     fn ready(&mut self) {
+        let this = self.to_gd();
+
+        self.network_manager
+            .signals()
+            .message_serialized()
+            .connect_obj(&this, Self::on_message_serialized);
+
         // Default URL if not set in the editor
         if self.websocket_url.is_empty() {
             self.websocket_url = "ws://localhost:8887".into();
@@ -89,4 +100,10 @@ impl INode for NetworkClient {
 impl NetworkClient {
     #[signal]
     fn on_message_received(message: GString);
+
+    #[func]
+    fn on_message_serialized(&mut self, message: GString) {
+        // Emit the signal with the serialized message
+        self.socket.send_text(&message);
+    }
 }
