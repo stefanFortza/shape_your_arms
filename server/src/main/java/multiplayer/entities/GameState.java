@@ -3,8 +3,6 @@ package multiplayer.entities;
 import java.util.List;
 import java.util.Map;
 
-import multiplayer.entities.entities_data.PlayerData;
-
 public class GameState {
     private Map<String, Player> players;
     private List<Bullet> bullets;

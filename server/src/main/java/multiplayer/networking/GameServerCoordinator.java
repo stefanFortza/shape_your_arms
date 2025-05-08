@@ -1,8 +1,8 @@
 package multiplayer.networking;
 
-import org.apache.log4j.Logger;
 import org.java_websocket.WebSocket;
 
+import multiplayer.audit.AuditService;
 import multiplayer.entities.GameWorld;
 import multiplayer.networking.messages.GameMessage;
 import multiplayer.networking.messages.MessageFactory;
@@ -13,8 +13,6 @@ import multiplayer.networking.web_socket_signal_data.OnMessageReceivedData;
 import multiplayer.utils.Signal;
 
 public class GameServerCoordinator {
-    private static Logger logger = Logger.getLogger(GameServerCoordinator.class);
-
     // WebSocket server
     private WebSocketHandler socketServer;
     private final int PORT = 8887;
@@ -77,7 +75,6 @@ public class GameServerCoordinator {
 
             if (parsedMessage instanceof MoveMessageFromClient message) {
                 moveMessageReceivedSignal.emit(message);
-                System.out.println("Move message received: " + message.getDirection());
             }
             // } else if (parsedMessage instanceof ShootMessage message) {
             // System.out.println("Shoot message received: " + message.getRotation());
@@ -103,6 +100,8 @@ public class GameServerCoordinator {
     }
 
     public void stop() {
+        AuditService.deleteCsv();
+
         try {
             socketServer.stop();
         } catch (InterruptedException e) {

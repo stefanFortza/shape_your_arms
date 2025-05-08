@@ -1,17 +1,13 @@
 // Rename to GameMessageBroker
 package multiplayer.networking;
 
-import org.apache.log4j.Logger;
-import org.dyn4j.geometry.Vector2;
 import org.java_websocket.WebSocket;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import multiplayer.entities.Bullet;
 import multiplayer.entities.GameState;
 import multiplayer.entities.GameWorld;
 import multiplayer.entities.Player;
@@ -29,8 +25,6 @@ import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
  * Handles all network communication with clients
  */
 public class NetworkManager {
-    private static Logger logger = Logger.getLogger(NetworkManager.class);
-
     private final Map<String, WebSocket> connections = new ConcurrentHashMap<>();
     private final Gson gson = new Gson();
     private GameWorld gameWorld;

@@ -4,21 +4,19 @@ package multiplayer.entities;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import multiplayer.entities.entities_data.PlayerData;
+import multiplayer.audit.AuditService;
 import multiplayer.entities.game_world_signal_data.OnPlayerJoinedGameWorldData;
 import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
 import multiplayer.gui.GameWorldGUI;
 import multiplayer.gui.framework.SimulationBody;
 import multiplayer.networking.NetworkManager;
-import multiplayer.networking.messages.InitialGameStateMessage;
-import multiplayer.networking.messages.MessageFactory;
-import multiplayer.networking.messages.MessageType;
 import multiplayer.networking.messages.move_messages.MoveMessageFromClient;
 import multiplayer.networking.GameServerCoordinator;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
@@ -29,6 +27,8 @@ import multiplayer.utils.Signal;
  * Handles all game logic and state
  */
 public class GameWorld {
+    public static final Logger logger = LogManager.getLogger(GameWorld.class);
+
     public Signal<OnPlayerJoinedGameWorldData> playerJoinedGameWorldSignal = new Signal<>(
             "playerJoinedGameWorldSignal");
     public Signal<OnPlayerLeftGameWorldData> playerLeftGameWorldSignal = new Signal<>("playerLeftGameWorldSignal");
@@ -47,6 +47,8 @@ public class GameWorld {
 
         gameWorldGUI = new GameWorldGUI(world);
         gameWorldGUI.run();
+        logger.debug("GameWorld GUI initialized");
+        AuditService.logAction("GameWorld GUI initialized");
         System.out.println("GameWorld initialized");
     }
 
@@ -81,40 +83,32 @@ public class GameWorld {
 
     public void onMoveMessageReceived(MoveMessageFromClient message) {
         Vector2 direction = message.getDirection().getNormalized();
+        Player player = players.get(message.getPlayerId());
+
+        if (player == null) {
+            logger.warn("Player not found: " + message.getPlayerId());
+            return;
+        }
 
         switch (message.getMoveMessageType()) {
             case MOVEMENT_STARTED:
                 // Handle player movement start
-                System.out.println("Player " + message.getPlayerId() + " started moving in direction: " + direction);
-                Player player = players.get(message.getPlayerId());
+                AuditService
+                        .logAction("Player " + player.getId() + " started moving in direction: " + direction);
 
-                if (player == null) {
-                    System.out.println("Player not found: " + message.getPlayerId());
-                    return;
-                }
+                player.startMoving(direction);
 
-                // Set the player's linear velocity based on the direction
-                player.setLinearVelocity(direction.multiply(5));
                 break;
             case MOVEMENT_STOPPED:
                 // Handle player movement stop
+                AuditService
+                        .logAction("Player " + player.getId() + " stopped moving in direction: " + direction);
                 System.out.println("Player " + message.getPlayerId() + " stopped moving");
+
+                player.stopMoving();
 
                 break;
         }
-        // TODO: Handle player movement
-        // Player player = players.get(playerId);
-        // if (player != null) {
-        // double x = message.get("x").getAsDouble();
-        // double y = message.get("y").getAsDouble();
-
-        // double rotation = message.has("rotation") ?
-        // message.get("rotation").getAsDouble() : player.getRotation();
-
-        // player.setPosition(new Vector2(x, y));
-        // player.setRotation(rotation);
-
-        // }
     }
 
     public void handlePlayerShoot(String playerId, JsonObject message) {
@@ -158,7 +152,15 @@ public class GameWorld {
 
         this.gameWorldGUI.gameLoop(deltaTime);
         // this.world.update(deltaTime);
+        updatePlayers(deltaTime);
         updateBullets(deltaTime);
+
+    }
+
+    private void updatePlayers(float deltaTime) {
+        for (Player player : players.values()) {
+            player.update(deltaTime);
+        }
     }
 
     private void updateBullets(float deltaTime) {

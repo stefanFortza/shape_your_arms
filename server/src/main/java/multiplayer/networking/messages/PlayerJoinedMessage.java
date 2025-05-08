@@ -1,7 +1,5 @@
 package multiplayer.networking.messages;
 
-import org.dyn4j.geometry.Vector2;
-
 import multiplayer.entities.entities_data.PlayerData;
 
 public class PlayerJoinedMessage extends GameMessage {

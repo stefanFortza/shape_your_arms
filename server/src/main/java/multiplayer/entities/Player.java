@@ -4,12 +4,15 @@ import org.dyn4j.geometry.Geometry;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
 
+import multiplayer.audit.AuditService;
 import multiplayer.entities.entities_data.PlayerData;
 
 public class Player extends GameObject {
     private String id;
     private int health = 100;
     private int score = 0;
+    private boolean isMoving = false;
+    private Vector2 direction;
 
     public Player(Vector2 position, String id) {
         super(position);
@@ -21,8 +24,9 @@ public class Player extends GameObject {
         // this.addFixture(Geometry.createRectangle(1.0, 1.5));
         this.addFixture(Geometry.createCircle(0.35));
         this.setMass(MassType.NORMAL);
-        // this.setLinearVelocity(new Vector2(1, 0));
-        this.setLinearDamping(2);
+
+        this.getFixture(0).setFriction(0);
+        this.getFixture(0).setRestitution(0);
     }
 
     public PlayerData getPlayerData() {
@@ -78,18 +82,25 @@ public class Player extends GameObject {
     }
 
     public void startMoving(Vector2 direction) {
-        // Set the player's linear velocity based on the direction
-        this.setLinearVelocity(direction.multiply(5));
+        this.isMoving = true;
+        this.direction = direction.getNormalized();
     }
 
     public void stopMoving() {
-        // Stop the player's movement
-        this.setLinearVelocity(new Vector2(0, 0));
+        this.isMoving = false;
+        this.direction = new Vector2(0, 0);
     }
 
     @Override
     public void update(float deltaTime) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        if (isMoving) {
+            Vector2 newVeclocity = new Vector2(this.direction).multiply(50).multiply(deltaTime);
+
+            // Update the player's position based on the direction
+            this.setLinearVelocity(newVeclocity);
+        } else {
+            // Stop the player's movement
+            this.setLinearVelocity(new Vector2(0, 0));
+        }
     }
 }
