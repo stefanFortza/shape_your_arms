@@ -94,7 +94,7 @@ public class Player extends GameObject {
     @Override
     public void update(float deltaTime) {
         if (isMoving) {
-            Vector2 newVeclocity = new Vector2(this.direction).multiply(50).multiply(deltaTime);
+            Vector2 newVeclocity = new Vector2(this.direction).multiply(5000).multiply(deltaTime);
 
             // Update the player's position based on the direction
             this.setLinearVelocity(newVeclocity);

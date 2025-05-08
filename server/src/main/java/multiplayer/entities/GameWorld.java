@@ -33,6 +33,8 @@ public class GameWorld {
             "playerJoinedGameWorldSignal");
     public Signal<OnPlayerLeftGameWorldData> playerLeftGameWorldSignal = new Signal<>("playerLeftGameWorldSignal");
 
+    public Signal<GameState> gameStateSyncSignal = new Signal<>("gameStateSyncSignal");
+
     private final World<SimulationBody> world = new World<>();
     private final Map<String, Player> players = new ConcurrentHashMap<>();
     private final List<Bullet> bullets = new ArrayList<>();
@@ -135,23 +137,13 @@ public class GameWorld {
     }
 
     public void update(float deltaTime) {
-        timer += deltaTime;
-        if (timer > 4) {
-            timer = 0;
-
-            // InitialGameStateMessage initialGameStateMessage = new
-            // InitialGameStateMessage(getGameState());
-            // String initialGameState =
-            // MessageFactory.serializeMessage(initialGameStateMessage);
-            // System.out.println(initialGameState);
-
-            // Broadcast the game state to all clients
-            // gameServerCoordinator.broadcastGameState(players, bullets);
-
-        }
+        // timer += deltaTime;
+        // if (timer > 4) {
+        // timer = 0;
+        gameStateSyncSignal.emit(getGameState());
+        // }
 
         this.gameWorldGUI.gameLoop(deltaTime);
-        // this.world.update(deltaTime);
         updatePlayers(deltaTime);
         updateBullets(deltaTime);
 

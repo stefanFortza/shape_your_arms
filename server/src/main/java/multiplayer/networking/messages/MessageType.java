@@ -13,6 +13,7 @@ public enum MessageType {
     PLAYER_LEFT("playerLeft"),
     PLAYER_JOINED("playerJoined"),
     INITIAL_GAME_STATE("initialGameState"),
+    GAME_STATE_SYNC("gameStateSync"),
     PLAYER_MOVE_FROM_SERVER("playerMoveFromServer");
 
     private final String type;

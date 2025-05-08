@@ -1,26 +1,21 @@
 use std::collections::HashMap;
 
-use godot::prelude::GodotConvert;
+use godot::prelude::GodotClass;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::serializable_vector2::SerializableVector2;
 
-use super::{bullet_parser::Bullet, player_parser::Player};
-
-// #[derive(Deserialize, Debug)]
-// pub struct GameStateData {
-//     pub players: HashMap<String, Player>,
-//     pub bullets: Vec<Bullet>,
-// }
+use super::{bullet_data::BulletData, player_data::PlayerData};
 
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")] // Use the "type" field in JSON to determine the variant.
 pub enum MessageType {
-    // GameState {
-    //     #[serde(flatten)]
-    //     data: GameStateData,
-    // },
+    #[serde(rename_all = "camelCase")]
+    GameStateSync {
+        players: HashMap<String, PlayerData>,
+        bullets: Vec<BulletData>,
+    },
     // Hit {
     //     damage: u32,
     // },

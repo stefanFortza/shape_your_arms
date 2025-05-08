@@ -1,7 +1,7 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
-pub struct Bullet {
+#[derive(Deserialize, Serialize, Debug)]
+pub struct BulletData {
     pub owner_id: String,
     pub x: f64,
     pub y: f64,

@@ -1,3 +1,3 @@
-pub mod bullet_parser;
+pub mod bullet_data;
 pub mod message_type;
-pub mod player_parser;
+pub mod player_data;

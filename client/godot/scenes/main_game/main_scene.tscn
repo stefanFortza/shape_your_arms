@@ -1,6 +1,5 @@
-[gd_scene load_steps=4 format=3 uid="uid://01eemjofmn6g"]
+[gd_scene load_steps=3 format=3 uid="uid://01eemjofmn6g"]
 
-[ext_resource type="PackedScene" uid="uid://m4vwtjqvbguk" path="res://scenes/main_game/player_scene.tscn" id="1_2c62f"]
 [ext_resource type="PackedScene" uid="uid://cx2xkh3iumsts" path="res://scenes/main_game/main_game_ui.tscn" id="3_gwc6n"]
 [ext_resource type="PackedScene" uid="uid://cplxw8svw8xld" path="res://scenes/network_scene.tscn" id="3_gyfs4"]
 
@@ -8,7 +7,11 @@
 
 [node name="UI" parent="." instance=ExtResource("3_gwc6n")]
 
-[node name="GameWorldManager" type="Node" parent="."]
+[node name="GameWorldManager" type="GameWorldManager" parent="."]
+
+[node name="Network" parent="GameWorldManager" instance=ExtResource("3_gyfs4")]
+
+[node name="InputController" type="InputController" parent="GameWorldManager"]
 
 [node name="BackGround" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -21,8 +24,5 @@ offset_bottom = 869.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Player" parent="." instance=ExtResource("1_2c62f")]
-position = Vector2(458, 230)
-scale = Vector2(0.6, 0.6)
-
-[node name="Network" parent="." instance=ExtResource("3_gyfs4")]
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(307, 160)

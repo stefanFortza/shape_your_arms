@@ -1,12 +1,8 @@
-use std::str::FromStr;
-
-use godot::classes::class_macros::registry::signal;
-use godot::classes::class_macros::sys::known_virtual_hashes::VideoStreamPlayback::play;
-use godot::classes::{INode, Node};
-use godot::meta::GodotType;
+use godot::classes::{INode, Input, Node};
 use godot::prelude::*;
 
 use crate::entities::player::Player;
+use crate::main_game::input_controller::{self, InputController};
 use crate::utils::serializable_vector2::SerializableVector2;
 
 use super::messages::message_type::MessageType;
@@ -32,14 +28,14 @@ impl INode for NetwornkManager {
     fn ready(&mut self) {
         godot_print!("NetworkManager is ready");
 
-        let player = self.find_player_node();
-        if let Some(mut player) = player {
-            godot_print!("Player node found: {:?}", player);
+        let input_controller = self.get_input_controller();
+        if let Some(mut input_controller) = input_controller {
+            godot_print!("InputController found");
 
-            player
+            input_controller
                 .signals()
-                .player_direction_changed()
-                .connect_obj(&self.to_gd(), Self::on_player_direction_changed);
+                .input_direction_changed()
+                .connect_obj(&self.to_gd(), Self::on_input_direction_changed);
         } else {
             godot_print!("Player node not found");
         }
@@ -52,20 +48,28 @@ pub impl NetwornkManager {
     pub fn message_serialized(message: GString);
 
     #[signal]
-    fn welcome_message_received(player_id: GString);
+    pub fn welcome_message_received(player_id: GString);
+
+    #[signal]
+    pub fn game_state_sync_received(game_state_sync: GString);
 
     #[func]
     fn on_message_received(&mut self, message: GString) {
-        let message = MessageType::from_json(message.to_string().as_str());
-        if let Ok(message) = message {
-            godot_print!("Message received: {:?}", message);
-
-            match message {
+        // godot_print!("Message received: {:?}", message);
+        let parsed_message = MessageType::from_json(message.to_string().as_str());
+        if let Ok(parsed_message) = parsed_message {
+            match parsed_message {
                 MessageType::Welcome { player_id } => {
                     godot_print!("Welcome message received with player ID: {}", player_id);
                     let player_id = player_id.to_godot();
                     self.player_id = Some(player_id.clone());
                     self.signals().welcome_message_received().emit(player_id);
+                }
+                MessageType::GameStateSync {
+                    players: _,
+                    bullets: _,
+                } => {
+                    self.signals().game_state_sync_received().emit(message);
                 }
                 // Handle other message types here
                 _ => {
@@ -80,7 +84,7 @@ pub impl NetwornkManager {
     }
 
     #[func]
-    fn on_player_direction_changed(&mut self, direction: Vector2) {
+    fn on_input_direction_changed(&mut self, direction: Vector2) {
         // Handle player movement
 
         let move_message_type = if direction != Vector2::ZERO {
@@ -95,10 +99,7 @@ pub impl NetwornkManager {
             move_message_type: move_message_type.to_string(),
         };
 
-        if let Ok(json) = serde_json::to_string(&message) {
-            godot_print!("Player moved: {}", json);
-
-            // Emit the signal with the serialized message
+        if let Ok(json) = MessageType::to_json(&message) {
             self.signals().message_serialized().emit(json.to_godot());
         } else {
             godot_print!("Failed to serialize player movement");
@@ -106,17 +107,11 @@ pub impl NetwornkManager {
     }
 
     #[func]
-    fn find_player_node(&self) -> Option<Gd<Player>> {
-        let tree = self.base().get_tree();
-        if let Some(mut tree) = tree {
-            let player = tree.get_first_node_in_group("player");
+    fn get_input_controller(&self) -> Option<Gd<InputController>> {
+        let input_controller = self
+            .base()
+            .try_get_node_as::<InputController>("../../InputController");
 
-            if let Some(player) = player {
-                let player = player.cast::<Player>();
-
-                return Some(player);
-            }
-        }
-        None
+        return input_controller;
     }
 }

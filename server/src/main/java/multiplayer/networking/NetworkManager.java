@@ -8,11 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import multiplayer.audit.AuditService;
 import multiplayer.entities.GameState;
 import multiplayer.entities.GameWorld;
 import multiplayer.entities.Player;
 import multiplayer.entities.game_world_signal_data.OnPlayerJoinedGameWorldData;
 import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
+import multiplayer.networking.messages.GameStateSyncMessage;
 import multiplayer.networking.messages.InitialGameStateMessage;
 import multiplayer.networking.messages.MessageFactory;
 import multiplayer.networking.messages.MessageType;
@@ -42,6 +44,7 @@ public class NetworkManager {
 
         gameWorld.playerJoinedGameWorldSignal.connect(this::onPlayerJoinedGameWorld);
         gameWorld.playerLeftGameWorldSignal.connect(this::onPlayerLeftGameWorld);
+        gameWorld.gameStateSyncSignal.connect(this::onGameStateSync);
     }
 
     public void onClientConnected(OnClientConnectedData data) {
@@ -84,6 +87,15 @@ public class NetworkManager {
         System.out.println("Player left: " + player.getId());
 
         broadcast(leaveMsg.toString(), player.getId());
+    }
+
+    public void onGameStateSync(GameState gameState) {
+        GameStateSyncMessage gameStateSyncMessage = new GameStateSyncMessage(gameState);
+        String gameStateSyncMsg = MessageFactory.serializeMessage(gameStateSyncMessage);
+        AuditService
+                .logAction("Game state sync message: " + gameStateSyncMsg);
+
+        broadcast(gameStateSyncMsg);
     }
 
     public void sendInitialGameState(WebSocket conn, GameState gameState) {
