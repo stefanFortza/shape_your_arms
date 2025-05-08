@@ -1,13 +1,10 @@
 use godot::classes::{CharacterBody2D, ICharacterBody2D, Input};
-use godot::obj::WithBaseField;
 use godot::prelude::*;
-use serde_json::json;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
 pub struct Player {
-    speed: f64,
-    angular_speed: f64,
+    last_direction: Vector2,
     #[base]
     base: Base<CharacterBody2D>,
 }
@@ -15,7 +12,7 @@ pub struct Player {
 #[godot_api]
 impl Player {
     #[signal]
-    pub fn player_moved(direction: Vector2);
+    pub fn player_direction_changed(direction: Vector2);
 
     #[func]
     pub fn get_input_direction(&mut self) -> Vector2 {
@@ -24,7 +21,6 @@ impl Player {
         if Input::singleton().is_action_pressed("move_right") {
             direction.x += 1.0;
         }
-
         if Input::singleton().is_action_pressed("move_left") {
             direction.x -= 1.0;
         }
@@ -37,27 +33,9 @@ impl Player {
 
         if direction.length() > 0.0 {
             direction = direction.normalized();
-
-            // let dir = json! ({
-            //         "x": direction.x,
-            //         "y": direction.y
-            // });
         }
 
         direction
-    }
-
-    pub fn update_position(&mut self, direction: Vector2, delta: f64) {
-        if direction.length() > 0.0 {}
-        // let mut new_position = self.base().get_position();
-        // new_position.x += direction.x * self.speed as f32 * delta as f32;
-        // new_position.y += direction.y * self.speed as f32 * delta as f32;
-        // self.base_mut().set_position(new_position);
-    }
-
-    fn rotate_player(&mut self, delta: f64) {
-        let radians = (self.angular_speed * delta) as f32;
-        self.base_mut().rotate(radians as f32);
     }
 }
 
@@ -65,24 +43,19 @@ impl Player {
 impl ICharacterBody2D for Player {
     fn init(base: Base<CharacterBody2D>) -> Self {
         Self {
-            speed: 1000.0,
-            angular_speed: std::f64::consts::PI,
+            last_direction: Vector2::ZERO,
             base,
         }
     }
 
     fn ready(&mut self) {}
 
-    fn physics_process(&mut self, delta: f64) {
+    fn physics_process(&mut self, _delta: f64) {
         let direction = self.get_input_direction();
 
-        if direction != Vector2::ZERO {
-            self.signals().player_moved().emit(direction);
-            // self.base_mut()
-            //     .emit_signal("player_moved", &[direction.to_variant()]);
+        if direction != self.last_direction {
+            self.last_direction = direction;
+            self.signals().player_direction_changed().emit(direction);
         }
-        // godot_print!("{}", delta);
-        self.update_position(direction, delta);
-        // self.rotate_player(delta);
     }
 }

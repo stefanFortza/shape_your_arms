@@ -94,11 +94,12 @@ public class GameWorld {
                 }
 
                 // Set the player's linear velocity based on the direction
-                player.setLinearVelocity(direction);
+                player.setLinearVelocity(direction.multiply(5));
                 break;
             case MOVEMENT_STOPPED:
                 // Handle player movement stop
                 System.out.println("Player " + message.getPlayerId() + " stopped moving");
+
                 break;
         }
         // TODO: Handle player movement

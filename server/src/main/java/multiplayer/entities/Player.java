@@ -22,6 +22,7 @@ public class Player extends GameObject {
         this.addFixture(Geometry.createCircle(0.35));
         this.setMass(MassType.NORMAL);
         // this.setLinearVelocity(new Vector2(1, 0));
+        this.setLinearDamping(2);
     }
 
     public PlayerData getPlayerData() {
@@ -74,6 +75,16 @@ public class Player extends GameObject {
 
     public void setRadius(double radius) {
         this.radius = radius;
+    }
+
+    public void startMoving(Vector2 direction) {
+        // Set the player's linear velocity based on the direction
+        this.setLinearVelocity(direction.multiply(5));
+    }
+
+    public void stopMoving() {
+        // Stop the player's movement
+        this.setLinearVelocity(new Vector2(0, 0));
     }
 
     @Override

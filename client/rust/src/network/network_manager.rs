@@ -38,8 +38,8 @@ impl INode for NetwornkManager {
 
             player
                 .signals()
-                .player_moved()
-                .connect_obj(&self.to_gd(), Self::on_player_moved);
+                .player_direction_changed()
+                .connect_obj(&self.to_gd(), Self::on_player_direction_changed);
         } else {
             godot_print!("Player node not found");
         }
@@ -79,24 +79,20 @@ pub impl NetwornkManager {
         // godot_print!("Message received: {}", message);
     }
 
-    // #[func]
-    // fn send_message(&self, message: MessageType) {
-    //     // Serialize the message to JSON
-    //     let json_message = serde_json::to_string(&message).unwrap();
-    //     godot_print!("Sending message: {}", json_message);
-
-    //     // Send the message over the network
-    //     // self.socket.send_text(&json_message);
-    // }
-
     #[func]
-    fn on_player_moved(&mut self, direction: Vector2) {
+    fn on_player_direction_changed(&mut self, direction: Vector2) {
         // Handle player movement
+
+        let move_message_type = if direction != Vector2::ZERO {
+            "movementStarted"
+        } else {
+            "movementStopped"
+        };
 
         let message = MessageType::PlayerMoveFromClient {
             player_id: self.player_id.clone().unwrap_or_default().to_string(),
             direction: SerializableVector2::new_from_vector2(&direction),
-            move_message_type: "movementStarted".to_string(),
+            move_message_type: move_message_type.to_string(),
         };
 
         if let Ok(json) = serde_json::to_string(&message) {
@@ -107,7 +103,6 @@ pub impl NetwornkManager {
         } else {
             godot_print!("Failed to serialize player movement");
         }
-        // let player_moved_message:MessageType = MessageType::PlayerMoveFromClient { player_id: (), direction: () }
     }
 
     #[func]
