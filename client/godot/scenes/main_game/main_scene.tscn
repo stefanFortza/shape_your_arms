@@ -1,7 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://01eemjofmn6g"]
+[gd_scene load_steps=5 format=3 uid="uid://01eemjofmn6g"]
 
 [ext_resource type="PackedScene" uid="uid://cx2xkh3iumsts" path="res://scenes/main_game/main_game_ui.tscn" id="3_gwc6n"]
 [ext_resource type="PackedScene" uid="uid://cplxw8svw8xld" path="res://scenes/network_scene.tscn" id="3_gyfs4"]
+
+[sub_resource type="Gradient" id="Gradient_syjwu"]
+interpolation_mode = 1
+colors = PackedColorArray(0.439216, 0.6, 0.568627, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_gwc6n"]
+gradient = SubResource("Gradient_syjwu")
 
 [node name="MainScene" type="Node2D"]
 
@@ -17,12 +24,17 @@
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -467.0
-offset_top = -203.0
-offset_right = 1538.0
-offset_bottom = 869.0
+offset_left = -469.0
+offset_top = -146.0
+offset_right = 1536.0
+offset_bottom = 926.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(307, 160)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(426, 196)
+scale = Vector2(1, 206.5)
+texture = SubResource("GradientTexture1D_gwc6n")

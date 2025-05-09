@@ -51,6 +51,12 @@ pub impl NetwornkManager {
     pub fn welcome_message_received(player_id: GString);
 
     #[signal]
+    pub fn player_joined_message_received(player_joined_message: GString);
+
+    #[signal]
+    pub fn player_left_message_received(player_joined_message: GString);
+
+    #[signal]
     pub fn game_state_sync_received(game_state_sync: GString);
 
     #[func]
@@ -71,6 +77,15 @@ pub impl NetwornkManager {
                 } => {
                     self.signals().game_state_sync_received().emit(message);
                 }
+                MessageType::PlayerJoined { player_data: _ } => {
+                    self.signals()
+                        .player_joined_message_received()
+                        .emit(message);
+                }
+                MessageType::PlayerLeft { player_data: _ } => {
+                    self.signals().player_left_message_received().emit(message);
+                }
+
                 // Handle other message types here
                 _ => {
                     godot_print!("Other message type received");

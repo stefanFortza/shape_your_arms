@@ -25,17 +25,11 @@ pub enum MessageType {
     // },
     #[serde(rename_all = "camelCase")]
     Welcome { player_id: String },
-    // PlayerLeft {
-    //     player_id: u32,
-    // },
-    // PlayerJoined {
-    //     player_id: u32,
-    //     name: String,
-    // },
-    // InitialGameState {
-    //     #[serde(flatten)]
-    //     data: GameStateData,
-    // },
+
+    #[serde(rename_all = "camelCase")]
+    PlayerLeft { player_data: PlayerData },
+    #[serde(rename_all = "camelCase")]
+    PlayerJoined { player_data: PlayerData },
     // PlayerMoveFromServer {
     //     player_id: u32,
     //     x: f32,

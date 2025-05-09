@@ -14,7 +14,7 @@ pub struct Player {
 
 #[godot_api]
 pub impl Player {
-    pub fn apply_network_state(&mut self, player_data: PlayerData) {
+    pub fn apply_network_state(&mut self, player_data: &PlayerData) {
         godot_print!("Applying network state: {:?}", player_data);
         let transform = player_data.transform;
         self.base_mut()

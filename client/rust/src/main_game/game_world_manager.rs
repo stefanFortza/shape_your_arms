@@ -5,6 +5,7 @@ use godot::prelude::*;
 
 use crate::entities::player::Player;
 use crate::network::messages::message_type::MessageType;
+use crate::network::messages::player_data::PlayerData;
 use crate::network::network_manager::NetwornkManager;
 
 // GameManager.rs
@@ -15,6 +16,7 @@ pub struct GameWorldManager {
 
     players: HashMap<String, Gd<Player>>,
     player_scene: OnReady<Gd<PackedScene>>,
+    network_manager: OnReady<Gd<NetwornkManager>>,
 
     #[base]
     base: Base<Node>,
@@ -27,30 +29,33 @@ impl INode for GameWorldManager {
             local_player_id: None,
             players: HashMap::new(),
             player_scene: OnReady::from_loaded("res://scenes/main_game/player_scene.tscn"),
+            network_manager: OnReady::from_node("./Network/NetworkManager"),
             base,
         }
     }
     fn ready(&mut self) {
         // Connect to NetworkManager signals
-        let network_manager = self
-            .base()
-            .try_get_node_as::<NetwornkManager>("./Network/NetworkManager");
+        let this = self.to_gd();
 
-        if let Some(mut network_manager) = network_manager {
-            let this = self.to_gd();
+        self.network_manager
+            .signals()
+            .welcome_message_received()
+            .connect_obj(&this, Self::on_welcome_message_received);
 
-            network_manager
-                .signals()
-                .welcome_message_received()
-                .connect_obj(&this, Self::on_welcome_message_received);
+        self.network_manager
+            .signals()
+            .game_state_sync_received()
+            .connect_obj(&this, Self::on_game_state_sync_received);
 
-            network_manager
-                .signals()
-                .game_state_sync_received()
-                .connect_obj(&this, Self::on_game_state_sync_received);
-        } else {
-            godot_print!("NetworkManager not found");
-        }
+        self.network_manager
+            .signals()
+            .player_joined_message_received()
+            .connect_obj(&this, Self::on_player_joined_message_received);
+
+        self.network_manager
+            .signals()
+            .player_left_message_received()
+            .connect_obj(&this, Self::on_player_left_message_received);
     }
 }
 
@@ -63,22 +68,54 @@ impl GameWorldManager {
     }
 
     #[func]
+    fn on_player_joined_message_received(&mut self, message: GString) {
+        // Deserialize and add player to the game world
+        let parsed_message = MessageType::from_json(message.to_string().as_str()).unwrap();
+
+        if let MessageType::PlayerJoined { player_data } = parsed_message {
+            self.instantiate_player_scene(&player_data);
+        }
+    }
+
+    #[func]
+    fn on_player_left_message_received(&mut self, message: GString) {
+        let parsed_message = MessageType::from_json(message.to_string().as_str()).unwrap();
+
+        if let MessageType::PlayerLeft { player_data } = parsed_message {
+            self.remove_player_from_scene(&player_data);
+        }
+    }
+
+    #[func]
     fn on_game_state_sync_received(&mut self, message: GString) {
         // Deserialize and update players/game state
         let parsed_message = MessageType::from_json(message.to_string().as_str()).unwrap();
+
         if let MessageType::GameStateSync { players, .. } = parsed_message {
             for (id, player_data) in players {
                 if let Some(player) = self.players.get_mut(&id) {
                     // Update existing player
-                    player.bind_mut().apply_network_state(player_data);
+                    player.bind_mut().apply_network_state(&player_data);
                 } else {
                     // Create new player
-                    let mut new_player = self.player_scene.instantiate_as::<Player>();
-                    new_player.bind_mut().apply_network_state(player_data);
-                    self.base_mut().add_child(&new_player);
-                    self.players.insert(id.clone(), new_player);
+                    self.instantiate_player_scene(&player_data);
                 }
             }
+        }
+    }
+
+    fn instantiate_player_scene(&mut self, player_data: &PlayerData) {
+        let mut new_player = self.player_scene.instantiate_as::<Player>();
+        new_player.bind_mut().apply_network_state(&player_data);
+        self.base_mut().add_child(&new_player);
+        self.players
+            .insert(player_data.player_id.clone(), new_player);
+    }
+
+    fn remove_player_from_scene(&mut self, player_data: &PlayerData) {
+        let player_removed = self.players.remove(&player_data.player_id);
+        if let Some(mut player_removed) = player_removed {
+            player_removed.queue_free();
         }
     }
 }

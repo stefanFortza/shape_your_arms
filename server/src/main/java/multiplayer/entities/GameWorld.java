@@ -116,23 +116,6 @@ public class GameWorld {
     public void handlePlayerShoot(String playerId, JsonObject message) {
         Player player = players.get(playerId);
         if (player != null) {
-            // double rotation = message.get("rotation").getAsDouble();
-
-            // Calculate direction vector from rotation
-            // double dirX = Math.cos(rotation);
-            // double dirY = Math.sin(rotation);
-
-            // TODO
-            // Create bullet at player's position
-            // Bullet bullet = new Bullet(
-            // playerId,
-            // player.getX(),
-            // player.getY(),
-            // dirX,
-            // dirY);
-
-            // bullets.add(bullet);
-
         }
     }
 

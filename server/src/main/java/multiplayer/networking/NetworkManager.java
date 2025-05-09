@@ -19,6 +19,7 @@ import multiplayer.networking.messages.InitialGameStateMessage;
 import multiplayer.networking.messages.MessageFactory;
 import multiplayer.networking.messages.MessageType;
 import multiplayer.networking.messages.PlayerJoinedMessage;
+import multiplayer.networking.messages.PlayerLeftMessage;
 import multiplayer.networking.messages.WelcomeMessage;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
 import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
@@ -79,14 +80,11 @@ public class NetworkManager {
 
     public void onPlayerLeftGameWorld(OnPlayerLeftGameWorldData data) {
         Player player = data.player();
-        // Notify all clients about the player leaving
-        JsonObject leaveMsg = new JsonObject();
-        leaveMsg.addProperty("type", MessageType.PLAYER_LEFT.getType());
-        leaveMsg.addProperty("id", player.getId());
+        PlayerLeftMessage playerLeftMessage = new PlayerLeftMessage(player.getPlayerData());
 
         System.out.println("Player left: " + player.getId());
 
-        broadcast(leaveMsg.toString(), player.getId());
+        broadcast(MessageFactory.serializeMessage(playerLeftMessage), player.getId());
     }
 
     public void onGameStateSync(GameState gameState) {
@@ -100,7 +98,9 @@ public class NetworkManager {
 
     public void sendInitialGameState(WebSocket conn, GameState gameState) {
 
-        InitialGameStateMessage initialGameStateMessage = new InitialGameStateMessage(gameState);
+        // InitialGameStateMessage initialGameStateMessage = new
+        // InitialGameStateMessage(gameState);
+        GameStateSyncMessage initialGameStateMessage = new GameStateSyncMessage(gameState);
         String initialGameState = MessageFactory.serializeMessage(initialGameStateMessage);
 
         conn.send(initialGameState);
