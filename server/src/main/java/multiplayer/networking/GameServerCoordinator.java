@@ -6,6 +6,8 @@ import multiplayer.audit.AuditService;
 import multiplayer.entities.GameWorld;
 import multiplayer.networking.messages.GameMessage;
 import multiplayer.networking.messages.MessageFactory;
+import multiplayer.networking.messages.PlayerMouseDirectionFromClientMessage;
+import multiplayer.networking.messages.ShootMessageFromClient;
 import multiplayer.networking.messages.move_messages.MoveMessageFromClient;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
 import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
@@ -25,6 +27,8 @@ public class GameServerCoordinator {
     public Signal<OnClientConnectedData> clientConnectedSignal = new Signal<>("clientConnectedSignal");
     public Signal<OnClientDisconnectedData> clientDisconnectedSignal = new Signal<>("clientDisconnectedSignal");
     public Signal<MoveMessageFromClient> moveMessageReceivedSignal = new Signal<>("moveMessageReceivedSignal");
+    public Signal<PlayerMouseDirectionFromClientMessage> playerMouseDirectionReceivedSignal = new Signal<>(
+            "playerMouseDirectionReceivedSignal");
 
     public GameServerCoordinator() {
 
@@ -75,10 +79,13 @@ public class GameServerCoordinator {
 
             if (parsedMessage instanceof MoveMessageFromClient message) {
                 moveMessageReceivedSignal.emit(message);
+            } else if (parsedMessage instanceof ShootMessageFromClient message) {
+                // System.out.println("Shoot message received: " + message.getRotation());
+            } else if (parsedMessage instanceof PlayerMouseDirectionFromClientMessage message) {
+                playerMouseDirectionReceivedSignal.emit(message);
+                // System.out.println("Mouse direction message received: " +
+                // message.getMouseDirection());
             }
-            // } else if (parsedMessage instanceof ShootMessage message) {
-            // System.out.println("Shoot message received: " + message.getRotation());
-            // }
 
             // // Delegate to appropriate handler
             // switch (type) {
@@ -93,7 +100,9 @@ public class GameServerCoordinator {
             // default:
             // System.out.println("Unknown message type: " + type);
             // }
-        } catch (Exception e) {
+        } catch (
+
+        Exception e) {
             System.err.println("Error processing message: " + messageText);
             e.printStackTrace();
         }

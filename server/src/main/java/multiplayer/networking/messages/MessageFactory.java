@@ -37,10 +37,14 @@ public class MessageFactory {
                 return gson.fromJson(json, MoveMessageFromServer.class);
 
             case PLAYER_SHOOT:
-                return gson.fromJson(json, ShootMessage.class);
+                return gson.fromJson(json, ShootMessageFromClient.class);
 
             case INITIAL_GAME_STATE:
                 return gson.fromJson(json, InitialGameStateMessage.class);
+
+            case PLAYER_MOUSE_DIRECTION_FROM_CLIENT:
+                return gson.fromJson(json, PlayerMouseDirectionFromClientMessage.class);
+
             default:
                 throw new IllegalArgumentException("Unknown message type: " + type);
         }

@@ -12,7 +12,5 @@ scale = Vector2(0.25, 0.25)
 shape = SubResource("RectangleShape2D_4flbx")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+rotation = 1.5708
 texture = ExtResource("1_crmta")
-
-[node name="Camera2D" type="Camera2D" parent="."]
-position_smoothing_enabled = true

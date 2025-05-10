@@ -4,7 +4,6 @@ import org.dyn4j.geometry.Geometry;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
 
-import multiplayer.audit.AuditService;
 import multiplayer.entities.entities_data.PlayerData;
 
 public class Player extends GameObject {
@@ -91,6 +90,12 @@ public class Player extends GameObject {
         this.direction = new Vector2(0, 0);
     }
 
+    public void setRotationByDirection(Vector2 direction) {
+        // Calculate the angle based on the direction vector
+        double angle = Math.atan2(direction.y, direction.x);
+        this.transform.setRotation(angle);
+    }
+
     @Override
     public void update(float deltaTime) {
         if (isMoving) {
@@ -102,5 +107,7 @@ public class Player extends GameObject {
             // Stop the player's movement
             this.setLinearVelocity(new Vector2(0, 0));
         }
+
+        // this.getTransform().setRotation()
     }
 }

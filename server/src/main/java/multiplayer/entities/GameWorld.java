@@ -17,6 +17,7 @@ import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
 import multiplayer.gui.GameWorldGUI;
 import multiplayer.gui.framework.SimulationBody;
 import multiplayer.networking.NetworkManager;
+import multiplayer.networking.messages.PlayerMouseDirectionFromClientMessage;
 import multiplayer.networking.messages.move_messages.MoveMessageFromClient;
 import multiplayer.networking.GameServerCoordinator;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
@@ -59,6 +60,7 @@ public class GameWorld {
         gameServerCoordinator.clientConnectedSignal.connect(this::onClientConnected);
         gameServerCoordinator.clientDisconnectedSignal.connect(this::onClientDisconnected);
         gameServerCoordinator.moveMessageReceivedSignal.connect(this::onMoveMessageReceived);
+        gameServerCoordinator.playerMouseDirectionReceivedSignal.connect(this::onPlayerMouseDirectionReceived);
     }
 
     public void onClientConnected(OnClientConnectedData data) {
@@ -111,6 +113,18 @@ public class GameWorld {
 
                 break;
         }
+    }
+
+    public void onPlayerMouseDirectionReceived(PlayerMouseDirectionFromClientMessage message) {
+
+        Player player = players.get(message.getPlayerId());
+        if (player != null) {
+            player.setRotationByDirection(message.getMouseDirection());
+            System.out.println("Player " + message.getPlayerId() + " mouse direction: " + message.getMouseDirection());
+        } else {
+            logger.warn("Player not found: " + message.getPlayerId());
+        }
+
     }
 
     public void handlePlayerShoot(String playerId, JsonObject message) {

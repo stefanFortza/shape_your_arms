@@ -24,7 +24,10 @@ pub enum MessageType {
     //     reason: String,
     // },
     #[serde(rename_all = "camelCase")]
-    Welcome { player_id: String },
+    Welcome {
+        player_id: String,
+        player_data: PlayerData,
+    },
 
     #[serde(rename_all = "camelCase")]
     PlayerLeft { player_data: PlayerData },
@@ -44,6 +47,11 @@ pub enum MessageType {
         player_id: String,
         direction: SerializableVector2,
         move_message_type: String,
+    },
+    #[serde(rename_all = "camelCase")]
+    PlayerMouseDirectionFromClient {
+        player_id: String,
+        mouse_direction: SerializableVector2,
     },
 }
 

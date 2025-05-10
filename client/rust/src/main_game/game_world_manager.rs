@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use godot::classes::INode;
+use godot::classes::class_macros::registry::signal;
+use godot::classes::{Camera2D, INode};
 use godot::prelude::*;
 
 use crate::entities::player::Player;
@@ -61,10 +62,29 @@ impl INode for GameWorldManager {
 
 #[godot_api]
 impl GameWorldManager {
+    #[signal]
+    pub fn local_player_instantiated(player: Gd<Player>);
+
     #[func]
-    fn on_welcome_message_received(&mut self, player_id: GString) {
-        self.local_player_id = Some(player_id.clone());
-        godot_print!("Welcome message received with player ID: {:?}", player_id);
+    fn on_welcome_message_received(&mut self, message: GString) {
+        // Deserialize and add player to the game world
+        let parsed_message = MessageType::from_json(message.to_string().as_str()).unwrap();
+        if let MessageType::Welcome {
+            player_id,
+            player_data,
+        } = parsed_message
+        {
+            self.local_player_id = Some(player_id.clone().to_godot());
+            let mut player = self.instantiate_player_scene(&player_data);
+
+            // let camera_node = self.base().get_node_as::<Camera2D>("../Camera2D");
+            // self.base_mut().remove_child(&camera_node);
+            // camera_node.get_parent().unwrap().remove_child(&camera_node);
+            let camera_node = Camera2D::new_alloc();
+            player.add_child(&camera_node);
+
+            self.signals().local_player_instantiated().emit(player);
+        }
     }
 
     #[func]
@@ -104,12 +124,14 @@ impl GameWorldManager {
         }
     }
 
-    fn instantiate_player_scene(&mut self, player_data: &PlayerData) {
+    fn instantiate_player_scene(&mut self, player_data: &PlayerData) -> Gd<Player> {
         let mut new_player = self.player_scene.instantiate_as::<Player>();
         new_player.bind_mut().apply_network_state(&player_data);
         self.base_mut().add_child(&new_player);
         self.players
-            .insert(player_data.player_id.clone(), new_player);
+            .insert(player_data.player_id.clone(), new_player.clone());
+
+        new_player
     }
 
     fn remove_player_from_scene(&mut self, player_data: &PlayerData) {

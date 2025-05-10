@@ -90,8 +90,8 @@ public class NetworkManager {
     public void onGameStateSync(GameState gameState) {
         GameStateSyncMessage gameStateSyncMessage = new GameStateSyncMessage(gameState);
         String gameStateSyncMsg = MessageFactory.serializeMessage(gameStateSyncMessage);
-        AuditService
-                .logAction("Game state sync message: " + gameStateSyncMsg);
+        // AuditService
+        // .logAction("Game state sync message: " + gameStateSyncMsg);
 
         broadcast(gameStateSyncMsg);
     }
@@ -107,7 +107,7 @@ public class NetworkManager {
     }
 
     public void sendWelcomeMessage(WebSocket conn, String playerId, Player player) {
-        WelcomeMessage welcomeMessage = new WelcomeMessage(playerId);
+        WelcomeMessage welcomeMessage = new WelcomeMessage(playerId, player.getPlayerData());
         String welcomeMsg = MessageFactory.serializeMessage(welcomeMessage);
 
         if (conn != null && conn.isOpen()) {

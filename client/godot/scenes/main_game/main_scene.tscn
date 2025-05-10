@@ -31,9 +31,6 @@ offset_bottom = 926.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(307, 160)
-
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(426, 196)
 scale = Vector2(1, 206.5)
