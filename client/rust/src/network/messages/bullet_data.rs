@@ -1,8 +1,9 @@
+use godot::classes::class_macros::sys::known_virtual_hashes::EditorDebuggerPlugin;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::transform::Transform;
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct BulletData {
     pub bullet_id: String,

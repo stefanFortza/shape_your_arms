@@ -7,7 +7,7 @@ use crate::utils::serializable_vector2::SerializableVector2;
 
 use super::{bullet_data::BulletData, player_data::PlayerData};
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")] // Use the "type" field in JSON to determine the variant.
 pub enum MessageType {
@@ -16,8 +16,6 @@ pub enum MessageType {
         players: HashMap<String, PlayerData>,
         bullets: HashMap<String, BulletData>,
     },
-    // Hit {
-    //     damage: u32,
     // },
     // PlayerDeath {
     //     player_id: u32,

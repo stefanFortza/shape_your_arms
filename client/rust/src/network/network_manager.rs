@@ -1,3 +1,4 @@
+use godot::classes::class_macros::sys::known_virtual_hashes::EditorResourceConversionPlugin::convert;
 use godot::classes::{INode, Input, Node};
 use godot::prelude::*;
 
@@ -6,6 +7,7 @@ use crate::main_game::input_controller::{self, InputController};
 use crate::utils::serializable_vector2::SerializableVector2;
 
 use super::messages::message_type::MessageType;
+use super::meters_pixels_converter::MetersPixelsConverter;
 
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -68,22 +70,32 @@ pub impl NetwornkManager {
     #[func]
     fn on_message_received(&mut self, message: GString) {
         // godot_print!("Message received: {:?}", message);
+        let meters_pixels_converter = MetersPixelsConverter::default_converter();
         let parsed_message = MessageType::from_json(message.to_string().as_str());
         if let Ok(parsed_message) = parsed_message {
             match parsed_message {
                 MessageType::Welcome {
-                    player_id,
+                    ref player_id, // Changed: use `ref` to borrow player_id
                     player_data: _,
                 } => {
                     godot_print!("Welcome message received with player ID: {:?}", player_id);
+
+                    let converted_message = meters_pixels_converter
+                        .convert_message_coordinates_to_pixels(&parsed_message); // Changed: pass reference to parsed_message
+
                     let player_id = player_id.to_godot();
                     self.player_id = Some(player_id.clone());
-                    self.signals().welcome_message_received().emit(message);
+                    self.signals()
+                        .welcome_message_received()
+                        .emit(MessageType::to_json(&converted_message).unwrap().to_godot());
                 }
                 MessageType::GameStateSync {
                     players: _,
                     bullets: _,
                 } => {
+                    let converted_message = meters_pixels_converter
+                        .convert_message_coordinates_to_pixels(&parsed_message);
+                    let message = MessageType::to_json(&converted_message).unwrap().to_godot();
                     self.signals().game_state_sync_received().emit(message);
                 }
                 MessageType::PlayerJoined { player_data: _ } => {

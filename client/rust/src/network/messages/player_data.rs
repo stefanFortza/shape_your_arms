@@ -6,7 +6,7 @@ use crate::utils::transform::Transform;
 // "transform":{"cost":1.0,"sint":0.0,"x":0.0,"y":0.0},"health":100,"score":0}}
 // ,"bullets":[],"type":"gameStateSync"}"
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerData {
     pub player_id: String,
