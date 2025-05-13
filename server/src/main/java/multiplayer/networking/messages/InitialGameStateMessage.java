@@ -18,8 +18,8 @@ public class InitialGameStateMessage extends GameMessage {
 
         this.players = gameState.getPlayers().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getPlayerData()));
-        this.bullets = gameState.getBullets().stream()
-                .map(Bullet::getBulletData)
+        this.bullets = gameState.getBullets().entrySet().stream()
+                .map(entry -> entry.getValue().getBulletData())
                 .collect(Collectors.toList());
 
     }

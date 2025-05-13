@@ -9,8 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
 
-import com.google.gson.JsonObject;
-
 import multiplayer.audit.AuditService;
 import multiplayer.entities.game_world_signal_data.OnPlayerJoinedGameWorldData;
 import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
@@ -18,6 +16,7 @@ import multiplayer.gui.GameWorldGUI;
 import multiplayer.gui.framework.SimulationBody;
 import multiplayer.networking.NetworkManager;
 import multiplayer.networking.messages.PlayerMouseDirectionFromClientMessage;
+import multiplayer.networking.messages.PlayerShootMessageFromClient;
 import multiplayer.networking.messages.move_messages.MoveMessageFromClient;
 import multiplayer.networking.GameServerCoordinator;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
@@ -38,7 +37,7 @@ public class GameWorld {
 
     private final World<SimulationBody> world = new World<>();
     private final Map<String, Player> players = new ConcurrentHashMap<>();
-    private final List<Bullet> bullets = new ArrayList<>();
+    private final Map<String, Bullet> bullets = new ConcurrentHashMap<>();
     private final NetworkManager messageBroker;
     private final GameServerCoordinator gameServerCoordinator;
     private final GameWorldGUI gameWorldGUI;
@@ -61,6 +60,7 @@ public class GameWorld {
         gameServerCoordinator.clientDisconnectedSignal.connect(this::onClientDisconnected);
         gameServerCoordinator.moveMessageReceivedSignal.connect(this::onMoveMessageReceived);
         gameServerCoordinator.playerMouseDirectionReceivedSignal.connect(this::onPlayerMouseDirectionReceived);
+        gameServerCoordinator.shootMessageReceivedSignal.connect(this::onShootMessageReceived);
     }
 
     public void onClientConnected(OnClientConnectedData data) {
@@ -127,19 +127,29 @@ public class GameWorld {
 
     }
 
-    public void handlePlayerShoot(String playerId, JsonObject message) {
-        Player player = players.get(playerId);
-        if (player != null) {
+    public void onShootMessageReceived(PlayerShootMessageFromClient message) {
+
+        Player player = players.get(message.getPlayerId());
+        if (player == null) {
+            logger.warn("Player not found: " + message.getPlayerId());
+            return;
         }
+        if (!player.canShoot()) {
+            System.out.println("Player " + message.getPlayerId() + " cannot shoot yet");
+            return;
+        }
+
+        System.out.println("Player " + player.getShootCooldown() + " shoot cooldown");
+
+        player.shoot();
+        Bullet bullet = new Bullet(player.getTransform(), message.getPlayerId());
+        bullets.put(bullet.getBulletId(), bullet);
+        this.world.addBody(bullet);
+        System.out.println("Player " + message.getPlayerId() + " shot a bullet");
     }
 
     public void update(float deltaTime) {
-        // timer += deltaTime;
-        // if (timer > 4) {
-        // timer = 0;
         gameStateSyncSignal.emit(getGameState());
-        // }
-
         this.gameWorldGUI.gameLoop(deltaTime);
         updatePlayers(deltaTime);
         updateBullets(deltaTime);
@@ -153,15 +163,16 @@ public class GameWorld {
     }
 
     private void updateBullets(float deltaTime) {
-        Iterator<Bullet> bulletIterator = bullets.iterator();
-        while (bulletIterator.hasNext()) {
-            Bullet bullet = bulletIterator.next();
+        List<Bullet> bulletsToRemove = new ArrayList<>();
+        for (Bullet bullet : bullets.values()) {
             bullet.update(deltaTime);
-
-            // Remove bullets that are out of bounds or expired
             if (bullet.isExpired()) {
-                bulletIterator.remove();
+                this.world.removeBody(bullet);
+                bulletsToRemove.add(bullet);
             }
+        }
+        for (Bullet bullet : bulletsToRemove) {
+            bullets.remove(bullet.getBulletId());
         }
     }
 

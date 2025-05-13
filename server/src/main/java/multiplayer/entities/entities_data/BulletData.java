@@ -5,6 +5,7 @@ import org.dyn4j.geometry.Transform;
 import multiplayer.entities.Bullet;
 
 public class BulletData {
+    private String bulletId;
     private String ownerId;
     private Transform transform;
 
@@ -12,6 +13,7 @@ public class BulletData {
     private double lifetime = 2.0; // seconds until bullet expires
 
     public BulletData(Bullet bullet) {
+        this.bulletId = bullet.getBulletId();
         this.ownerId = bullet.getOwnerId();
         this.transform = bullet.getTransform();
         this.damage = bullet.getDamage();

@@ -2,7 +2,7 @@ package multiplayer.networking.messages;
 
 public enum MessageType {
     // Incoming messages
-    PLAYER_SHOOT("playerShoot"),
+    PLAYER_SHOOT_MESSAGE_FROM_CLIENT("playerShootMessageFromClient"),
     PLAYER_MOVE_FROM_CLIENT("playerMoveFromClient"),
     PLAYER_MOUSE_DIRECTION_FROM_CLIENT("playerMouseDirectionFromClient"),
 

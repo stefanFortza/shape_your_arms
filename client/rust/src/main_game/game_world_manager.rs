@@ -4,7 +4,9 @@ use godot::classes::class_macros::registry::signal;
 use godot::classes::{Camera2D, INode};
 use godot::prelude::*;
 
+use crate::entities::bullet::Bullet;
 use crate::entities::player::Player;
+use crate::network::messages::bullet_data::BulletData;
 use crate::network::messages::message_type::MessageType;
 use crate::network::messages::player_data::PlayerData;
 use crate::network::network_manager::NetwornkManager;
@@ -16,7 +18,9 @@ pub struct GameWorldManager {
     local_player_id: Option<GString>,
 
     players: HashMap<String, Gd<Player>>,
+    bullets: HashMap<String, Gd<Bullet>>,
     player_scene: OnReady<Gd<PackedScene>>,
+    bullet_scene: OnReady<Gd<PackedScene>>,
     network_manager: OnReady<Gd<NetwornkManager>>,
 
     #[base]
@@ -29,7 +33,9 @@ impl INode for GameWorldManager {
         Self {
             local_player_id: None,
             players: HashMap::new(),
+            bullets: HashMap::new(),
             player_scene: OnReady::from_loaded("res://scenes/main_game/player_scene.tscn"),
+            bullet_scene: OnReady::from_loaded("res://scenes/main_game/bullet_scene.tscn"),
             network_manager: OnReady::from_node("./Network/NetworkManager"),
             base,
         }
@@ -111,7 +117,7 @@ impl GameWorldManager {
         // Deserialize and update players/game state
         let parsed_message = MessageType::from_json(message.to_string().as_str()).unwrap();
 
-        if let MessageType::GameStateSync { players, .. } = parsed_message {
+        if let MessageType::GameStateSync { players, bullets } = parsed_message {
             for (id, player_data) in players {
                 if let Some(player) = self.players.get_mut(&id) {
                     // Update existing player
@@ -119,6 +125,16 @@ impl GameWorldManager {
                 } else {
                     // Create new player
                     self.instantiate_player_scene(&player_data);
+                }
+            }
+
+            for (id, bullet_data) in bullets {
+                if let Some(bullet) = self.bullets.get_mut(&id) {
+                    // Update existing bullet
+                    bullet.bind_mut().apply_network_state(&bullet_data);
+                } else {
+                    // Create new bullet
+                    self.instantiate_bullet_scene(&bullet_data);
                 }
             }
         }
@@ -132,6 +148,16 @@ impl GameWorldManager {
             .insert(player_data.player_id.clone(), new_player.clone());
 
         new_player
+    }
+
+    fn instantiate_bullet_scene(&mut self, bullet_data: &BulletData) -> Gd<Bullet> {
+        let mut new_bullet = self.bullet_scene.instantiate_as::<Bullet>();
+        new_bullet.bind_mut().apply_network_state(&bullet_data);
+        self.base_mut().add_child(&new_bullet);
+        self.bullets
+            .insert(bullet_data.bullet_id.clone(), new_bullet.clone());
+
+        new_bullet
     }
 
     fn remove_player_from_scene(&mut self, player_data: &PlayerData) {

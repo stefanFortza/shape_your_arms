@@ -36,8 +36,8 @@ public class MessageFactory {
             case PLAYER_MOVE_FROM_SERVER:
                 return gson.fromJson(json, MoveMessageFromServer.class);
 
-            case PLAYER_SHOOT:
-                return gson.fromJson(json, ShootMessageFromClient.class);
+            case PLAYER_SHOOT_MESSAGE_FROM_CLIENT:
+                return gson.fromJson(json, PlayerShootMessageFromClient.class);
 
             case INITIAL_GAME_STATE:
                 return gson.fromJson(json, InitialGameStateMessage.class);

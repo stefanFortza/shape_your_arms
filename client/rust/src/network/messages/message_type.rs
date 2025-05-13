@@ -14,7 +14,7 @@ pub enum MessageType {
     #[serde(rename_all = "camelCase")]
     GameStateSync {
         players: HashMap<String, PlayerData>,
-        bullets: Vec<BulletData>,
+        bullets: HashMap<String, BulletData>,
     },
     // Hit {
     //     damage: u32,
@@ -38,10 +38,8 @@ pub enum MessageType {
     //     x: f32,
     //     y: f32,
     // },
-    // PlayerShoot {
-    //     player_id: u32,
-    //     direction: (f32, f32),
-    // },
+    #[serde(rename_all = "camelCase")]
+    PlayerShootMessageFromClient { player_id: String },
     #[serde(rename_all = "camelCase")]
     PlayerMoveFromClient {
         player_id: String,

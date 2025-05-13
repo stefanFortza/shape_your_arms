@@ -1,18 +1,33 @@
 package multiplayer.entities;
 
+import org.dyn4j.geometry.Geometry;
+import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Transform;
 import org.dyn4j.geometry.Vector2;
 
 import multiplayer.entities.entities_data.BulletData;
 
 public class Bullet extends GameObject {
+    private static int BULLET_ID_COUNTER = 0;
+
+    private String bulletId;
     private String ownerId;
     // private double speed = 500; // pixels per second
     private int damage = 10;
     private double lifetime = 2.0; // seconds until bullet expires
 
-    public Bullet(Vector2 position, String ownerId, Vector2 direction) {
-        super(position);
+    public Bullet(Transform parentTransform, String ownerId) {
+        super(parentTransform.getTranslation());
+        Vector2 position = parentTransform.getTranslation();
+        Vector2 direction = new Vector2(Math.cos(parentTransform.getRotation().toRadians()),
+                Math.sin(parentTransform.getRotation().toRadians()));
+
+        this.bulletId = "bullet" + BULLET_ID_COUNTER++;
         this.ownerId = ownerId;
+        this.setAtRestDetectionEnabled(false);
+        this.addFixture(Geometry.createCircle(0.1));
+        this.setMass(MassType.NORMAL);
+        this.setLinearVelocity(direction.multiply(50));
     }
 
     public BulletData getBulletData() {
@@ -22,13 +37,9 @@ public class Bullet extends GameObject {
 
     public void update(float deltaTime) {
 
-        // Vector2 newPosition = this.position.add(direction.multiply(speed *
-        // deltaTime));
-        // this.position = newPosition;
-
-        // // Move bullet
-        // this.x += dirX * speed * deltaTime;
-        // this.y += dirY * speed * deltaTime;
+        if (isExpired()) {
+            return; // Bullet is expired, do not update
+        }
 
         // Decrease lifetime
         lifetime -= deltaTime;
@@ -66,6 +77,10 @@ public class Bullet extends GameObject {
 
     public void setLifetime(double lifetime) {
         this.lifetime = lifetime;
+    }
+
+    public String getBulletId() {
+        return bulletId;
     }
 
 }

@@ -12,6 +12,7 @@ public class Player extends GameObject {
     private int score = 0;
     private boolean isMoving = false;
     private Vector2 direction;
+    private float shootCooldown = 0;
 
     public Player(Vector2 position, String id) {
         super(position);
@@ -96,6 +97,15 @@ public class Player extends GameObject {
         this.transform.setRotation(angle);
     }
 
+    public boolean canShoot() {
+        return shootCooldown <= 0;
+    }
+
+    public void shoot() {
+        System.out.println("Shooting!");
+        this.shootCooldown = 1.0f; // Set the cooldown to 1 second
+    }
+
     @Override
     public void update(float deltaTime) {
         if (isMoving) {
@@ -108,6 +118,23 @@ public class Player extends GameObject {
             this.setLinearVelocity(new Vector2(0, 0));
         }
 
+        // Update the shoot cooldown
+        if (this.shootCooldown > 0) {
+            this.shootCooldown -= deltaTime;
+        }
+
         // this.getTransform().setRotation()
+    }
+
+    public boolean isMoving() {
+        return isMoving;
+    }
+
+    public Vector2 getDirection() {
+        return direction;
+    }
+
+    public float getShootCooldown() {
+        return shootCooldown;
     }
 }

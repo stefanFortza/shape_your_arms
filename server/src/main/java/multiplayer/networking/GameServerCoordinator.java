@@ -7,7 +7,7 @@ import multiplayer.entities.GameWorld;
 import multiplayer.networking.messages.GameMessage;
 import multiplayer.networking.messages.MessageFactory;
 import multiplayer.networking.messages.PlayerMouseDirectionFromClientMessage;
-import multiplayer.networking.messages.ShootMessageFromClient;
+import multiplayer.networking.messages.PlayerShootMessageFromClient;
 import multiplayer.networking.messages.move_messages.MoveMessageFromClient;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
 import multiplayer.networking.web_socket_signal_data.OnClientDisconnectedData;
@@ -29,6 +29,8 @@ public class GameServerCoordinator {
     public Signal<MoveMessageFromClient> moveMessageReceivedSignal = new Signal<>("moveMessageReceivedSignal");
     public Signal<PlayerMouseDirectionFromClientMessage> playerMouseDirectionReceivedSignal = new Signal<>(
             "playerMouseDirectionReceivedSignal");
+    public Signal<PlayerShootMessageFromClient> shootMessageReceivedSignal = new Signal<>(
+            "shootMessageReceivedSignal");
 
     public GameServerCoordinator() {
 
@@ -79,8 +81,9 @@ public class GameServerCoordinator {
 
             if (parsedMessage instanceof MoveMessageFromClient message) {
                 moveMessageReceivedSignal.emit(message);
-            } else if (parsedMessage instanceof ShootMessageFromClient message) {
+            } else if (parsedMessage instanceof PlayerShootMessageFromClient message) {
                 // System.out.println("Shoot message received: " + message.getRotation());
+                shootMessageReceivedSignal.emit(message);
             } else if (parsedMessage instanceof PlayerMouseDirectionFromClientMessage message) {
                 playerMouseDirectionReceivedSignal.emit(message);
                 // System.out.println("Mouse direction message received: " +

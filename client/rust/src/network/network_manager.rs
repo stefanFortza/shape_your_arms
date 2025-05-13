@@ -41,6 +41,10 @@ impl INode for NetwornkManager {
             .signals()
             .mouse_input_direction_changed()
             .connect_obj(&this, Self::on_mouse_input_direction_changed);
+        self.input_controller
+            .signals()
+            .mouse_clicked()
+            .connect_obj(&this, Self::on_mouse_clicked);
     }
 }
 
@@ -132,6 +136,21 @@ pub impl NetwornkManager {
         let message = MessageType::PlayerMouseDirectionFromClient {
             player_id: self.player_id.clone().unwrap_or_default().to_string(),
             mouse_direction: SerializableVector2::new_from_vector2(&direction),
+        };
+
+        if let Ok(json) = MessageType::to_json(&message) {
+            self.signals().message_serialized().emit(json.to_godot());
+        } else {
+            godot_print!("Failed to serialize mouse input");
+        }
+    }
+
+    #[func]
+    fn on_mouse_clicked(&mut self) {
+        godot_print!("Mouse clicked");
+        // Handle mouse click
+        let message = MessageType::PlayerShootMessageFromClient {
+            player_id: self.player_id.clone().unwrap_or_default().to_string(),
         };
 
         if let Ok(json) = MessageType::to_json(&message) {

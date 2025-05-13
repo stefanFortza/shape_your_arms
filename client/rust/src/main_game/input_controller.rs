@@ -1,5 +1,6 @@
 use godot::classes::input::MouseMode;
 use godot::classes::{Input, viewport};
+use godot::global::MouseButton;
 use godot::prelude::*;
 
 use crate::entities::player::Player;
@@ -24,6 +25,9 @@ impl InputController {
 
     #[signal]
     pub fn mouse_input_direction_changed(direction: Vector2);
+
+    #[signal]
+    pub fn mouse_clicked();
 
     #[func]
     pub fn on_local_player_instantiated(&mut self, player: Gd<Player>) {
@@ -107,6 +111,13 @@ impl INode2D for InputController {
     fn physics_process(&mut self, _delta: f64) {
         if !self.is_mouse_inside_window() {
             return;
+        }
+
+        let input = Input::singleton();
+
+        // Check for left mouse button click
+        if input.is_mouse_button_pressed(MouseButton::LEFT) {
+            self.signals().mouse_clicked().emit();
         }
 
         let direction = self.get_move_input_direction();
