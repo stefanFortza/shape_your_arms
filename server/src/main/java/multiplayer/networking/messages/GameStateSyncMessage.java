@@ -1,11 +1,8 @@
 package multiplayer.networking.messages;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import multiplayer.entities.Bullet;
 import multiplayer.entities.GameState;
 import multiplayer.entities.entities_data.BulletData;
 import multiplayer.entities.entities_data.PlayerData;
@@ -13,6 +10,10 @@ import multiplayer.entities.entities_data.PlayerData;
 public class GameStateSyncMessage extends GameMessage {
     private Map<String, PlayerData> players;
     private Map<String, BulletData> bullets;
+
+    public GameStateSyncMessage() {
+        super(MessageType.GAME_STATE_SYNC);
+    }
 
     public GameStateSyncMessage(GameState gameState) {
         super(MessageType.GAME_STATE_SYNC);

@@ -55,8 +55,6 @@ impl InputController {
             direction = direction.normalized();
         }
 
-        // godot_print!("{} ", direction);
-
         direction
     }
     #[func]
@@ -70,6 +68,8 @@ impl InputController {
             }
 
             direction = (direction * 100.0).round() / 100.0;
+            direction.y = -direction.y;
+            // godot_print!("{} ", direction);
             return direction;
         }
         return Vector2::ZERO;

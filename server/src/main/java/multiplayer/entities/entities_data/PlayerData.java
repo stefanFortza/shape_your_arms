@@ -11,6 +11,9 @@ public class PlayerData {
     private int health = 100;
     private int score = 0;
 
+    public PlayerData() {
+    }
+
     public PlayerData(Player player) {
         this.playerId = player.getId();
         this.transform = player.getTransform();

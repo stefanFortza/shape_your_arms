@@ -10,13 +10,17 @@ import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
 
 import multiplayer.audit.AuditService;
+import multiplayer.entities.entities_data.BulletData;
+import multiplayer.entities.entities_data.PlayerData;
 import multiplayer.entities.game_world_signal_data.OnPlayerJoinedGameWorldData;
 import multiplayer.entities.game_world_signal_data.OnPlayerLeftGameWorldData;
 import multiplayer.gui.GameWorldGUI;
 import multiplayer.gui.framework.SimulationBody;
 import multiplayer.networking.NetworkManager;
+import multiplayer.networking.messages.GameStateSyncMessage;
 import multiplayer.networking.messages.PlayerMouseDirectionFromClientMessage;
 import multiplayer.networking.messages.PlayerShootMessageFromClient;
+import multiplayer.networking.messages.SaveGameStateMessage;
 import multiplayer.networking.messages.move_messages.MoveMessageFromClient;
 import multiplayer.networking.GameServerCoordinator;
 import multiplayer.networking.web_socket_signal_data.OnClientConnectedData;
@@ -32,8 +36,8 @@ public class GameWorld {
     public Signal<OnPlayerJoinedGameWorldData> playerJoinedGameWorldSignal = new Signal<>(
             "playerJoinedGameWorldSignal");
     public Signal<OnPlayerLeftGameWorldData> playerLeftGameWorldSignal = new Signal<>("playerLeftGameWorldSignal");
-
     public Signal<GameState> gameStateSyncSignal = new Signal<>("gameStateSyncSignal");
+    public Signal<GameState> gameStateSavedSignal = new Signal<>("gameStateSavedSignal");
 
     private final World<SimulationBody> world = new World<>();
     private final Map<String, Player> players = new ConcurrentHashMap<>();
@@ -61,6 +65,9 @@ public class GameWorld {
         gameServerCoordinator.moveMessageReceivedSignal.connect(this::onMoveMessageReceived);
         gameServerCoordinator.playerMouseDirectionReceivedSignal.connect(this::onPlayerMouseDirectionReceived);
         gameServerCoordinator.shootMessageReceivedSignal.connect(this::onShootMessageReceived);
+        gameServerCoordinator.saveGameStateReceivedSignal.connect(this::onSaveMessageReceived);
+        gameServerCoordinator.gameStateLoadedFromDatabaseSignal
+                .connect(this::onGameStateLoadedFromDatabase);
     }
 
     public void onClientConnected(OnClientConnectedData data) {
@@ -120,7 +127,8 @@ public class GameWorld {
         Player player = players.get(message.getPlayerId());
         if (player != null) {
             player.setRotationByDirection(message.getMouseDirection());
-            System.out.println("Player " + message.getPlayerId() + " mouse direction: " + message.getMouseDirection());
+            // System.out.println("Player " + message.getPlayerId() + " mouse direction: " +
+            // message.getMouseDirection());
         } else {
             logger.warn("Player not found: " + message.getPlayerId());
         }
@@ -146,6 +154,34 @@ public class GameWorld {
         bullets.put(bullet.getBulletId(), bullet);
         this.world.addBody(bullet);
         System.out.println("Player " + message.getPlayerId() + " shot a bullet");
+    }
+
+    public void onSaveMessageReceived(SaveGameStateMessage message) {
+        // Save game state to database
+        AuditService.logAction("Saving game state");
+        System.out.println("Saving game state");
+        gameStateSavedSignal.emit(getGameState());
+    }
+
+    public void onGameStateLoadedFromDatabase(GameStateSyncMessage gameState) {
+        // Load game state from database
+        System.out.println("Loading game state from database");
+        AuditService.logAction("Loading game state from database");
+
+        for (PlayerData playerData : gameState.getPlayers().values()) {
+            Player player = players.get(playerData.getPlayerId());
+            if (player != null) {
+                player.setPlayerData(playerData);
+            }
+        }
+
+        for (BulletData bulletData : gameState.getBullets().values()) {
+            Bullet bullet = bullets.get(bulletData.getBulletId());
+            if (bullet != null) {
+                bullet.setBulletData(bulletData);
+            }
+        }
+
     }
 
     public void update(float deltaTime) {

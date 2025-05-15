@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS game_state (
+    id Integer  PRIMARY KEY ,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

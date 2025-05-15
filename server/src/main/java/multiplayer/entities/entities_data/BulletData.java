@@ -12,6 +12,9 @@ public class BulletData {
     private int damage = 10;
     private double lifetime = 2.0; // seconds until bullet expires
 
+    public BulletData() {
+    }
+
     public BulletData(Bullet bullet) {
         this.bulletId = bullet.getBulletId();
         this.ownerId = bullet.getOwnerId();
@@ -50,6 +53,14 @@ public class BulletData {
 
     public void setLifetime(double lifetime) {
         this.lifetime = lifetime;
+    }
+
+    public String getBulletId() {
+        return bulletId;
+    }
+
+    public void setBulletId(String bulletId) {
+        this.bulletId = bulletId;
     }
 
 }

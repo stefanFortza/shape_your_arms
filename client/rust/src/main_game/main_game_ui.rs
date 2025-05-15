@@ -3,7 +3,8 @@ use godot::prelude::*;
 
 #[derive(GodotClass)]
 #[class(base=Control)]
-struct MainGameUI {
+pub struct MainGameUI {
+    save_button_pressed: bool,
     #[base]
     base: Base<Control>,
 }
@@ -11,14 +12,23 @@ struct MainGameUI {
 #[godot_api]
 impl IControl for MainGameUI {
     fn init(base: Base<Control>) -> Self {
-        Self { base }
+        Self {
+            save_button_pressed: false,
+            base,
+        }
     }
 
     fn physics_process(&mut self, delta: f64) {}
 }
 
 #[godot_api]
-impl MainGameUI {
+pub impl MainGameUI {
+    #[signal]
+    pub fn save_button_pressed();
+
+    #[signal]
+    pub fn load_button_pressed();
+
     #[func]
     fn _on_back_button_pressed(&self) {
         godot_print!("Start button pressed");
@@ -34,5 +44,19 @@ impl MainGameUI {
             }
             None => godot_print!("No tree found"),
         }
+    }
+
+    #[func]
+    pub fn _on_save_button_pressed(&mut self) {
+        if !self.save_button_pressed {
+            self.save_button_pressed = true;
+            self.signals().save_button_pressed().emit();
+        }
+    }
+
+    #[func]
+    pub fn _on_load_button_pressed(&mut self) {
+        godot_print!("Load button pressed");
+        self.signals().load_button_pressed().emit();
     }
 }

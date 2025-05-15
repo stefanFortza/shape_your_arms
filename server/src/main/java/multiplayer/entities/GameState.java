@@ -1,10 +1,6 @@
 package multiplayer.entities;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import multiplayer.entities.entities_data.BulletData;
 
 public class GameState {
     private Map<String, Player> players;

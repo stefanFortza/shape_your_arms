@@ -34,6 +34,14 @@ public class Player extends GameObject {
         return playerData;
     }
 
+    public void setPlayerData(PlayerData playerData) {
+        this.id = playerData.getPlayerId();
+        this.health = playerData.getHealth();
+        this.score = playerData.getScore();
+        this.transform.setTranslation(playerData.getTransform().getTranslation());
+        this.transform.setRotation(playerData.getTransform().getRotation());
+    }
+
     public void takeDamage(int damage) {
         this.health -= damage;
         if (this.health < 0)

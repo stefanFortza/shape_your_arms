@@ -5,6 +5,8 @@ public enum MessageType {
     PLAYER_SHOOT_MESSAGE_FROM_CLIENT("playerShootMessageFromClient"),
     PLAYER_MOVE_FROM_CLIENT("playerMoveFromClient"),
     PLAYER_MOUSE_DIRECTION_FROM_CLIENT("playerMouseDirectionFromClient"),
+    SAVE_GAME_STATE("saveGameState"),
+    LOAD_GAME_STATE("loadGameState"),
 
     // Outgoing messages
     GAME_STATE("gameState"),

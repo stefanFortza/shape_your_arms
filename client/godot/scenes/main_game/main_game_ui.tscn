@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cx2xkh3iumsts"]
 
-[node name="CanvasLayer" type="CanvasLayer"]
+[node name="UI" type="CanvasLayer"]
 
 [node name="MainGameUI" type="MainGameUI" parent="."]
 
@@ -17,4 +17,32 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 24
 text = "Back"
 
+[node name="SaveButton" type="Button" parent="MainGameUI"]
+layout_mode = 0
+offset_left = 957.0
+offset_top = 30.0
+offset_right = 1125.0
+offset_bottom = 108.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_colors/font_hover_color = Color(0.94902, 0.807843, 0.294118, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "Save"
+
+[node name="LoadButton" type="Button" parent="MainGameUI"]
+layout_mode = 0
+offset_left = 960.0
+offset_top = 145.0
+offset_right = 1128.0
+offset_bottom = 223.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_colors/font_hover_color = Color(0.94902, 0.807843, 0.294118, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "Load"
+
 [connection signal="pressed" from="MainGameUI/BackButton" to="MainGameUI" method="_on_back_button_pressed"]
+[connection signal="pressed" from="MainGameUI/SaveButton" to="MainGameUI" method="_on_save_button_pressed"]
+[connection signal="pressed" from="MainGameUI/LoadButton" to="MainGameUI" method="_on_load_button_pressed"]

@@ -128,13 +128,23 @@ impl GameWorldManager {
                 }
             }
 
-            for (id, bullet_data) in bullets {
-                if let Some(bullet) = self.bullets.get_mut(&id) {
+            for (id, bullet_data) in &bullets {
+                if let Some(bullet) = self.bullets.get_mut(&id.clone()) {
                     // Update existing bullet
                     bullet.bind_mut().apply_network_state(&bullet_data);
                 } else {
                     // Create new bullet
                     self.instantiate_bullet_scene(&bullet_data);
+                }
+            }
+
+            // Remove bullets that are no longer present
+            let bullet_ids: Vec<String> = self.bullets.keys().cloned().collect();
+            for id in bullet_ids {
+                if !bullets.contains_key(&id) {
+                    if let Some(mut bullet) = self.bullets.remove(&id) {
+                        bullet.queue_free();
+                    }
                 }
             }
         }

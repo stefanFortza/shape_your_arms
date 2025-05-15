@@ -35,6 +35,15 @@ public class Bullet extends GameObject {
         return bulletData;
     }
 
+    public void setBulletData(BulletData bulletData) {
+        this.bulletId = bulletData.getBulletId();
+        this.ownerId = bulletData.getOwnerId();
+        this.damage = bulletData.getDamage();
+        this.lifetime = bulletData.getLifetime();
+        this.transform.setTranslation(bulletData.getTransform().getTranslation());
+        this.transform.setRotation(bulletData.getTransform().getRotation());
+    }
+
     public void update(float deltaTime) {
 
         if (isExpired()) {

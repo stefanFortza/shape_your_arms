@@ -4,6 +4,7 @@ use godot::prelude::*;
 
 use crate::entities::player::Player;
 use crate::main_game::input_controller::{self, InputController};
+use crate::main_game::main_game_ui::MainGameUI;
 use crate::utils::serializable_vector2::SerializableVector2;
 
 use super::messages::message_type::MessageType;
@@ -14,6 +15,7 @@ use super::meters_pixels_converter::MetersPixelsConverter;
 pub struct NetwornkManager {
     player_id: Option<GString>,
     input_controller: OnReady<Gd<InputController>>,
+    main_game_ui: OnReady<Gd<MainGameUI>>,
 
     #[base]
     base: Base<Node>,
@@ -24,6 +26,7 @@ impl INode for NetwornkManager {
     fn init(base: Base<Node>) -> Self {
         Self {
             input_controller: OnReady::from_node("../../InputController"),
+            main_game_ui: OnReady::from_node("../../../UI/MainGameUI"),
             player_id: None,
             base,
         }
@@ -47,6 +50,16 @@ impl INode for NetwornkManager {
             .signals()
             .mouse_clicked()
             .connect_obj(&this, Self::on_mouse_clicked);
+
+        self.main_game_ui
+            .signals()
+            .save_button_pressed()
+            .connect_obj(&this, Self::_on_save_button_pressed);
+
+        self.main_game_ui
+            .signals()
+            .load_button_pressed()
+            .connect_obj(&this, Self::_on_load_button_pressed);
     }
 }
 
@@ -169,6 +182,31 @@ pub impl NetwornkManager {
             self.signals().message_serialized().emit(json.to_godot());
         } else {
             godot_print!("Failed to serialize mouse input");
+        }
+    }
+
+    #[func]
+    fn _on_save_button_pressed(&mut self) {
+        // Handle save button pressed
+        godot_print!("Save button pressed");
+        let message = MessageType::SaveGameState;
+        if let Ok(json) = MessageType::to_json(&message) {
+            self.signals().message_serialized().emit(json.to_godot());
+        } else {
+            godot_print!("Failed to serialize save game state");
+        }
+        // Emit a signal or perform an action
+    }
+
+    #[func]
+    fn _on_load_button_pressed(&mut self) {
+        // Handle load button pressed
+        godot_print!("Load button pressed");
+        let message = MessageType::LoadGameState;
+        if let Ok(json) = MessageType::to_json(&message) {
+            self.signals().message_serialized().emit(json.to_godot());
+        } else {
+            godot_print!("Failed to serialize load game state");
         }
     }
 }

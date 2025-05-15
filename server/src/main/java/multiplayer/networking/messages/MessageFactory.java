@@ -45,6 +45,12 @@ public class MessageFactory {
             case PLAYER_MOUSE_DIRECTION_FROM_CLIENT:
                 return gson.fromJson(json, PlayerMouseDirectionFromClientMessage.class);
 
+            case SAVE_GAME_STATE:
+                return gson.fromJson(json, SaveGameStateMessage.class);
+
+            case LOAD_GAME_STATE:
+                return gson.fromJson(json, LoadGameStateMessage.class);
+
             default:
                 throw new IllegalArgumentException("Unknown message type: " + type);
         }

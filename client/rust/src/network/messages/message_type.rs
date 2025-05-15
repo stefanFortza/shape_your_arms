@@ -16,11 +16,6 @@ pub enum MessageType {
         players: HashMap<String, PlayerData>,
         bullets: HashMap<String, BulletData>,
     },
-    // },
-    // PlayerDeath {
-    //     player_id: u32,
-    //     reason: String,
-    // },
     #[serde(rename_all = "camelCase")]
     Welcome {
         player_id: String,
@@ -31,11 +26,6 @@ pub enum MessageType {
     PlayerLeft { player_data: PlayerData },
     #[serde(rename_all = "camelCase")]
     PlayerJoined { player_data: PlayerData },
-    // PlayerMoveFromServer {
-    //     player_id: u32,
-    //     x: f32,
-    //     y: f32,
-    // },
     #[serde(rename_all = "camelCase")]
     PlayerShootMessageFromClient { player_id: String },
     #[serde(rename_all = "camelCase")]
@@ -49,6 +39,10 @@ pub enum MessageType {
         player_id: String,
         mouse_direction: SerializableVector2,
     },
+    #[serde(rename_all = "camelCase")]
+    SaveGameState,
+    #[serde(rename_all = "camelCase")]
+    LoadGameState,
 }
 
 impl MessageType {

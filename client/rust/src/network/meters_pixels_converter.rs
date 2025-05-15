@@ -4,7 +4,7 @@ use crate::utils::{serializable_vector2::SerializableVector2, transform::Transfo
 
 use super::messages::message_type::MessageType;
 
-const PIXELS_PER_METER: f32 = 64.0; // Default value, can be adjusted
+const PIXELS_PER_METER: f32 = 100.0f32; // Default value, can be adjusted
 
 #[derive(Debug, Copy, Clone, Default)]
 pub struct MetersPixelsConverter {
@@ -57,7 +57,7 @@ impl MetersPixelsConverter {
             x: self.meters_to_pixels(transform.x),
             y: -self.meters_to_pixels(transform.y),
             cost: transform.cost,
-            sint: transform.sint,
+            sint: -transform.sint,
         }
     }
 

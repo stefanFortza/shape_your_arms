@@ -1,0 +1,1 @@
+select * from game_state where id = (select max(id) from  game_state)

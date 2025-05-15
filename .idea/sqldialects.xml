@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/server/src/main/java/stefantacu/shape_your_arms/db/game_state.sql" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/stefantacu/shape_your_arms/db/initalize.sql" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/stefantacu/shape_your_arms/db/insert_game_state.sql" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/stefantacu/shape_your_arms/db/player_data.sql" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/stefantacu/shape_your_arms/db/select_game_state.sql" dialect="SQLite" />
+  </component>
+</project>

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import multiplayer.entities.Bullet;
 import multiplayer.entities.GameState;
 import multiplayer.entities.entities_data.BulletData;
 import multiplayer.entities.entities_data.PlayerData;
